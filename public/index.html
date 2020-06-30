@@ -13,101 +13,114 @@
 </head>
 
 <body>
-	<main id="app">
-		<v-app>
-			<v-card>
-				<v-toolbar dense color="primary">
-					<v-app-bar-nav-icon></v-app-bar-nav-icon>
-	
-					<v-toolbar-title>GuessWhat</v-toolbar-title>
-	
-					<v-spacer></v-spacer>
-				</v-toolbar>
-			</v-card>
-			
+	<v-app id="app">
+		<v-app-bar dense color="primary">
+			<v-toolbar-title>GuessWhat</v-toolbar-title>
+		</v-app-bar>
+
+		<v-main class="fill-height">
 			<v-container>
-				<v-row>
+				<v-row v-if="!joined">
+					<v-col cols="12">
+						<v-card align="center" justify="center" class="mx-auto" max-width="400">
+							<v-form ref="form" v-model="valid" lazy-validation @submit.prevent="join">
+								<v-container>
+									<v-row>
+										<v-col cols="12">
+											<v-text-field
+												v-model.trim="email"
+												label="Email"
+												autocomplete="email"
+			
+												:rules="emailRules"
+												required
+			
+												@keyup.enter="join"
+											></v-text-field>
+										</v-col>
+			
+										<v-col cols="12">
+											<v-text-field
+												v-model.trim="username"
+												label="Username"
+												autocomplete="name"
+			
+												:counter="30"
+												:rules="nameRules"
+												required
+			
+												@keyup.enter="join"
+											></v-text-field>
+										</v-col>
+
+										
+										<v-col>
+											<v-btn class="float-right" color="primary" @click="join" :disabled="!valid">
+												Join <v-icon right>mdi-check</v-icon>
+											</v-btn>
+										</v-col>
+									</v-row>
+								</v-container>
+							</v-form>
+						</v-card>
+					</v-col>
+				</v-row>
+	
+				<v-row v-if="joined">
 					<v-col cols="12">
 						<v-card>
-							<div id="chat-messages" class="card-content">
-								<v-row v-for="msg in chats" :key="msg.id" no-gutters>
-									<v-chip>
-										<v-avatar left>
-											<img :src="msg.avatar">
-										</v-avatar>
-										{{ msg.username }}
-									</v-chip>
-									<v-col class="ml-2">
-										{{ msg.message }}
-									</v-col>
-								</v-row>
-							</div>
+							<v-list disabled>
+								<v-subheader>CHAT</v-subheader>
+	
+								<v-list-item two-line v-for="msg in chats" :key="msg.id">
+									<v-list-item-avatar>
+										<img :src="msg.avatar" />
+									</v-list-item-avatar>
+									<v-list-item-content>
+										<v-list-item-title>{{ msg.username }}</v-list-item-title>
+										<v-list-item-subtitle v-html="msg.message"></v-list-item-subtitle>
+									</v-list-item-content>
+								</v-list-item>
+							</v-list>
 						</v-card>
-						</div>
 					</v-col>
 				</v-row>
 
-				<v-row v-if="!joined">
-					<v-form ref="form" v-model="valid" lazy-validation @submit.prevent="join">
-						<v-container>
-							<v-row>
-								<v-col cols="12">
-									<v-text-field
-										v-model.trim="email"
-										label="Email"
+				<v-row v-if="joined">
+					<v-col cols="12">
+						<v-card>
+							<v-form @submit.prevent="send">
+								<v-container>
+									<v-row>
+										<v-col cols="10">
+											<v-text-field
+												v-model.trim="newMsg"
+												autocomplete="off"
+												@keyup.enter="send">
+											</v-text-field>
+										</v-col>
 
-										:rules="emailRules"
-										required
-
-										@keyup.enter="join"
-									></v-text-field>
-								</v-col>
-
-								<v-col cols="12">
-									<v-text-field
-										v-model.trim="username"
-										label="Username"
-
-										:counter="30"
-										:rules="nameRules"
-										required
-
-										@keyup.enter="join"
-									></v-text-field>
-								</v-col>
-
-								<v-btn color="primary" tile @click="join" :disabled="!valid">
-									Join <v-icon right>mdi-check</v-icon>
-								</v-btn>
-							</v-row>
-						</v-container>
-					</v-form>
-				</v-row>
-
-				<v-row v-else>
-					<v-form @submit.prevent="send">
-						<v-container>
-							<v-row>
-								<v-col cols="12">
-									<v-text-field
-										v-model.trim="newMsg"
-										@keyup.enter="send">
-									</v-text-field>
-
-									<v-btn color="primary" @click="send">
-										Send <v-icon right>mdi-send</v-icon>
-									</v-btn>
-								</v-col>
-							</v-row>
-						</v-container>
-					</v-form>
+										<v-col cols="2">
+											<v-btn color="primary" @click="send">
+												Send <v-icon right>mdi-send</v-icon>
+											</v-btn>
+										</v-col>
+									</v-row>
+								</v-container>
+							</v-form>
+						</v-card>
+					</v-col>
 				</v-row>
 			</v-container>
-		</v-app>
-	</main>
+		</v-main>
+
+		<v-footer app>
+			<span>&copy; {{ new Date().getFullYear() }}</span>
+		</v-footer>
+	</v-app>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-  	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 	<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>

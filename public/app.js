@@ -35,7 +35,7 @@ new Vue({
                 avatar: self.gravatarURL(msg.email),
                 username: msg.username,
                 message: emojione.toImage(msg.message),
-                id: this.id++,
+                id: self.id++,
             });
 
             var chat = document.getElementById('chat-messages');
