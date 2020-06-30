@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>GuessWhat</title>
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
+	<link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+	<main id="app">
+		<v-app>
+			<v-card>
+				<v-toolbar dense color="primary">
+					<v-app-bar-nav-icon></v-app-bar-nav-icon>
+	
+					<v-toolbar-title>GuessWhat</v-toolbar-title>
+	
+					<v-spacer></v-spacer>
+				</v-toolbar>
+			</v-card>
+			
+			<v-container>
+				<v-row>
+					<v-col cols="12">
+						<v-card>
+							<div id="chat-messages" class="card-content">
+								<v-row v-for="msg in chats" :key="msg.id" no-gutters>
+									<v-chip>
+										<v-avatar left>
+											<img :src="msg.avatar">
+										</v-avatar>
+										{{ msg.username }}
+									</v-chip>
+									<v-col class="ml-2">
+										{{ msg.message }}
+									</v-col>
+								</v-row>
+							</div>
+						</v-card>
+						</div>
+					</v-col>
+				</v-row>
+
+				<v-row v-if="!joined">
+					<v-form ref="form" v-model="valid" lazy-validation @submit.prevent="join">
+						<v-container>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field
+										v-model.trim="email"
+										label="Email"
+
+										:rules="emailRules"
+										required
+
+										@keyup.enter="join"
+									></v-text-field>
+								</v-col>
+
+								<v-col cols="12">
+									<v-text-field
+										v-model.trim="username"
+										label="Username"
+
+										:counter="30"
+										:rules="nameRules"
+										required
+
+										@keyup.enter="join"
+									></v-text-field>
+								</v-col>
+
+								<v-btn color="primary" tile @click="join" :disabled="!valid">
+									Join <v-icon right>mdi-check</v-icon>
+								</v-btn>
+							</v-row>
+						</v-container>
+					</v-form>
+				</v-row>
+
+				<v-row v-else>
+					<v-form @submit.prevent="send">
+						<v-container>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field
+										v-model.trim="newMsg"
+										@keyup.enter="send">
+									</v-text-field>
+
+									<v-btn color="primary" @click="send">
+										Send <v-icon right>mdi-send</v-icon>
+									</v-btn>
+								</v-col>
+							</v-row>
+						</v-container>
+					</v-form>
+				</v-row>
+			</v-container>
+		</v-app>
+	</main>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+	<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+	<script src="/app.js"></script>
+</body>
+</html>
