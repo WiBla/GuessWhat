@@ -31,29 +31,29 @@
 												v-model.trim="email"
 												label="Email"
 												autocomplete="email"
-			
+
 												:rules="emailRules"
 												required
-			
+
 												@keyup.enter="join"
 											></v-text-field>
 										</v-col>
-			
+
 										<v-col cols="12">
 											<v-text-field
 												v-model.trim="username"
 												label="Username"
 												autocomplete="name"
-			
+
 												:counter="30"
 												:rules="nameRules"
 												required
-			
+
 												@keyup.enter="join"
 											></v-text-field>
 										</v-col>
 
-										
+
 										<v-col>
 											<v-btn class="float-right" color="primary" @click="join" :disabled="!valid">
 												Join <v-icon right>mdi-check</v-icon>
@@ -65,13 +65,13 @@
 						</v-card>
 					</v-col>
 				</v-row>
-	
+
 				<v-row v-if="joined">
 					<v-col cols="12">
 						<v-card>
 							<v-list disabled>
 								<v-subheader>CHAT</v-subheader>
-	
+
 								<v-list-item two-line v-for="msg in chats" :key="msg.id">
 									<v-list-item-avatar>
 										<img :src="msg.avatar" />
@@ -124,6 +124,6 @@
 	<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-	<script src="/js/app.js"></script>
+	<script src="js/app.js"></script>
 </body>
 </html>

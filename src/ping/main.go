@@ -1,0 +1,103 @@
+package main
+
+import (
+	"log"
+	"net/http"
+	"strings"
+
+	"github.com/gorilla/websocket"
+)
+
+var clients = make(map[*websocket.Conn]bool) // Connected clients
+var broadcast = make(chan Message)           // Broadcast channel
+
+// Configure the upgrader
+var upgrader = websocket.Upgrader{}
+
+// Message ...
+// Define our message object
+type Message struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Message  string `json:"message"`
+}
+
+func main() {
+	// Create a simple server
+	fs := http.FileServer(http.Dir("../public"))
+	http.Handle("/", fs)
+
+	// Configure websocket route
+	http.HandleFunc("/ws", handleConnections)
+
+	// Start listening for incoming chat messages
+	go handleMessages()
+
+	log.Println("http server started on :8000")
+	err := http.ListenAndServe(":8000", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+}
+
+func handleConnections(w http.ResponseWriter, r *http.Request) {
+	// Upgrade initial GET request to a websocket
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Make sure we close the connection when the function returns
+	defer ws.Close()
+
+	// Register our new client
+	clients[ws] = true
+
+	for {
+		messaggeType, p, err := ws.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		// Conversion en string UPPERCASE, puis re-conversion en byte pour l'envoie au ws
+		pUpper := strings.ToUpper(string(p))
+		log.Println(pUpper)
+		pUpperByte := []byte(pUpper)
+
+		if err := ws.WriteMessage(messaggeType, pUpperByte); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+
+	// Façon de faire pour envoyer du JSON au websocket (inutile pour le ping-pong)
+	// for {
+	// 	var msg Message
+	// 	// Read in a new message as JSON and map it to a Message object
+	// 	err := ws.ReadJSON(&msg)
+	// 	if err != nil {
+	// 		log.Printf("error: %v", err)
+	// 		delete(clients, ws)
+	// 		break
+	// 	}
+	// 	// Send the newly received message to the broadcast channel
+	// 	broadcast <- msg
+	// }
+}
+
+func handleMessages() {
+	for {
+		// Grab the next message from the broadcast channel
+		msg := <-broadcast
+		// Send it out to every client that is currently connected
+		for client := range clients {
+			err := client.WriteJSON(msg)
+			if err != nil {
+				log.Printf("error: %v", err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
+	}
+}

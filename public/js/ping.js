@@ -21,8 +21,22 @@ new Vue({
 	mounted: function() {
 		this.ws = new WebSocket(`ws://${window.location.host}/ws`);
 		this.ws.addEventListener('message', (e) => {
-			var msg = JSON.parse(e.data);
-			this.response = msg;
+			this.response = e.data;
+			// var msg = JSON.parse(e.data);
+			// this.response = msg;
 		})
+
+		this.ws.onopen = () => {
+			console.log("successfuully connected");
+			this.ws.send("Hi from the client");
+		}
+
+		this.ws.onclose = (event) => {
+			console.log("Socket Closed Connection", event);
+		}
+
+		this.ws.onerror = (error) => {
+			console.log("Socket Error: ", error);
+		}
 	}
 });
