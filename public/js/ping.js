@@ -15,7 +15,7 @@ new Vue({
 	methods: {
 		send() {
 			console.log(`J'envoie "${this.message}" au websocket`);
-			this.ws.send(this.message);
+			this.ws.send(JSON.stringify({ message: this.message }));
 		}
 	},
 	mounted: function() {
@@ -28,7 +28,9 @@ new Vue({
 
 		this.ws.onopen = () => {
 			console.log("successfuully connected");
-			this.ws.send("Hi from the client");
+			this.ws.send(JSON.stringify({
+				"message": "Hi from the client"
+			}));
 		}
 
 		this.ws.onclose = (event) => {

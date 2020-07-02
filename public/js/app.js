@@ -38,8 +38,8 @@ new Vue({
 				id: self.id++,
 			});
 
-			var chat = document.getElementById('chat-messages');
-			chat.scrollTop = chat.scrollHeight; // Auto scroll to the bottom
+			// var chat = document.getElementById('chat-messages');
+			// chat.scrollTop = chat.scrollHeight; // Auto scroll to the bottom
 		});
 	},
 	methods: {
@@ -47,6 +47,7 @@ new Vue({
 			if (this.newMsg != '') {
 				this.ws.send(
 					JSON.stringify({
+						type: "message",
 						email: this.email,
 						username: this.username,
 						message: $('<p>').html(this.newMsg).text() // Strip out html
@@ -66,6 +67,12 @@ new Vue({
 		},
 		gravatarURL: function(email) {
 			return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
+		},
+		changeUsername() {
+			this.ws.send(JSON.stringify({
+				type: "nickname",
+				nickname: "",
+			}));
 		}
 	}
 });

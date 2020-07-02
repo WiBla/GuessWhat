@@ -8,8 +8,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
-	<link rel="stylesheet" href="/style.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/
 </head>
 
 <body>
@@ -72,7 +71,7 @@
 							<v-list disabled>
 								<v-subheader>CHAT</v-subheader>
 
-								<v-list-item two-line v-for="msg in chats" :key="msg.id">
+								<v-list-item two-line v-for="msg in chats" :key="msg.id" id="chat-messages">
 									<v-list-item-avatar>
 										<img :src="msg.avatar" />
 									</v-list-item-avatar>

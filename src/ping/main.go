@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"log"
 	"net/http"
 
@@ -53,35 +52,19 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	// Register our new client
 	clients[ws] = true
 
-	for {
-		messaggeType, p, err := ws.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		toUpper := bytes.ToUpper(p)
-		log.Println(string(toUpper))
-
-		if err := ws.WriteMessage(messaggeType, toUpper); err != nil {
-			log.Println(err)
-			return
-		}
-	}
-
 	// Façon de faire pour envoyer du JSON au websocket (inutile pour le ping-pong)
-	// for {
-	// 	var msg Message
-	// 	// Read in a new message as JSON and map it to a Message object
-	// 	err := ws.ReadJSON(&msg)
-	// 	if err != nil {
-	// 		log.Printf("error: %v", err)
-	// 		delete(clients, ws)
-	// 		break
-	// 	}
-	// 	// Send the newly received message to the broadcast channel
-	// 	broadcast <- msg
-	// }
+	for {
+		var msg Message
+		// Read in a new message as JSON and map it to a Message object
+		err := ws.ReadJSON(&msg)
+		if err != nil {
+			log.Printf("error: %v", err)
+			delete(clients, ws)
+			break
+		}
+		// Send the newly received message to the broadcast channel
+		broadcast <- msg
+	}
 }
 
 func handleMessages() {
