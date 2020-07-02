@@ -1,9 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -60,12 +60,10 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Conversion en string UPPERCASE, puis re-conversion en byte pour l'envoie au ws
-		pUpper := strings.ToUpper(string(p))
-		log.Println(pUpper)
-		pUpperByte := []byte(pUpper)
+		toUpper := bytes.ToUpper(p)
+		log.Println(string(toUpper))
 
-		if err := ws.WriteMessage(messaggeType, pUpperByte); err != nil {
+		if err := ws.WriteMessage(messaggeType, toUpper); err != nil {
 			log.Println(err)
 			return
 		}
