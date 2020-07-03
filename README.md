@@ -34,17 +34,3 @@ https://hobbylark.com/party-games/pictionary-words
 
 Go sync.WaitGroup Basics - tutorial  
 https://www.youtube.com/watch?v=0BPSR-W4GSY  
-
-
-{
-	type: "canvas",
-	draw: {
-		line: {
-			"fromX": 0,
-			"fromY": 0,
-
-			"toX": 0,
-			"toY": 0,
-		},
-	}
-}

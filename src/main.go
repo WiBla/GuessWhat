@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-
 	"github.com/gorilla/websocket"
 )
 
@@ -31,6 +30,31 @@ type Message struct {
 type Nickname struct {
 	Type     string `json:"type"`
 	Nickname string `json:"nickname"`
+}
+
+// User ...
+type User struct {
+	Nickname string "nickname"
+	// Add is_drawing boolean attribute
+	IsDrawing bool
+}
+
+// Point ...
+type Point struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+}
+
+// Stroke ...
+type Stroke struct {
+	UserID string  `json:"userId"`
+	Points []Point `json:"points"`
+	Finish bool    `json:"finish"`
+}
+
+// Clear ...
+type Clear struct {
+	UserID string `json:"userId"`
 }
 
 func main() {
@@ -99,6 +123,10 @@ func handleMessages() {
 			}
 		}
 	}
+}
+
+func handleDrawingDataJson () {
+
 }
 
 // func handleMessages(wg *sync.WaitGroup) {
