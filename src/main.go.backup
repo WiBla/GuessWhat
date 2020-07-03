@@ -3,13 +3,14 @@ package main
 import (
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
 
 var clients = make(map[*websocket.Conn]bool) // Connected clients
 var broadcast = make(chan Message)           // Broadcast channel
-// var mutex sync.Mutex
+var mutex sync.Mutex
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{}
@@ -23,7 +24,7 @@ type Type struct {
 type Message struct {
 	Type     string `json:"type"`
 	Email    string `json:"email"`
-	Nickname string `json:"nickname"`
+	Username string `json:"username"`
 	Message  string `json:"message"`
 }
 
@@ -44,11 +45,9 @@ func main() {
 	// Start listening for incoming chat messages
 	// On protège les variables globales utilisées dans nos routines à l'aide
 	// de mutex, qui bloque chaque ressources quand elles sont accédée
-	// var wg sync.WaitGroup
-	// go handleMessages(&wg)
-	// wg.Wait()
-
-	go handleMessages()
+	var wg sync.WaitGroup
+	go handleMessages(&wg)
+	wg.Wait()
 
 	log.Println("http server started on :8000")
 	err := http.ListenAndServe(":8000", nil)
@@ -68,25 +67,61 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	defer ws.Close()
 
 	// Register our new client
-	clients[ws] = true
+	// clients[ws] = true
 
 	for {
-		var msg Message
+		var data Type
 
-		err := ws.ReadJSON(&msg)
+		err := ws.ReadJSON(&data)
 		if err != nil {
 			log.Printf("error: %v", err)
 			delete(clients, ws)
 			break
 		}
 
-		// Send the newly received message to the broadcast channel
-		broadcast <- msg
+		// Switch Between message according to his type
+		// If message broadcast to everyone
+		// Else nickname change nickname for future message
+		switch data.Type {
+		case "message":
+			var msg Message
+			// Read in a new message as JSON and map it to a Message object
+			err := ws.ReadJSON(&msg)
+			if err != nil {
+				log.Printf("error: %v", err)
+				delete(clients, ws)
+				break
+			}
+
+			// Send the newly received message to the broadcast channel
+			broadcast <- msg
+		case "nickname":
+			var nick Nickname
+			// Read in a new message as JSON and map it to a Nickname object
+			err := ws.ReadJSON(&nick)
+			if err != nil {
+				log.Printf("error: %v", err)
+				delete(clients, ws)
+				break
+			}
+
+			messageMap := make(map[string]interface{})
+			messageMap["type"] = "nickname"
+			messageMap["oldNick"] = ""
+			messageMap["newNick"] = ""
+
+			ws.WriteJSON(messageMap)
+		default:
+			println(data.Type)
+		}
 	}
 }
 
-func handleMessages() {
+func handleMessages(wg *sync.WaitGroup) {
+	mutex.Lock()
 	for {
+		wg.Add(1)
+
 		// Grab the next message from the broadcast channel
 		msg := <-broadcast
 		// Send it out to every client that is currently connected
@@ -97,28 +132,9 @@ func handleMessages() {
 				client.Close()
 				delete(clients, client)
 			}
+			wg.Done()
 		}
+		wg.Wait()
 	}
+	mutex.Unlock()
 }
-
-// func handleMessages(wg *sync.WaitGroup) {
-// 	mutex.Lock()
-// 	for {
-// 		wg.Add(1)
-
-// 		// Grab the next message from the broadcast channel
-// 		msg := <-broadcast
-// 		// Send it out to every client that is currently connected
-// 		for client := range clients {
-// 			err := client.WriteJSON(msg)
-// 			if err != nil {
-// 				log.Printf("error: %v", err)
-// 				client.Close()
-// 				delete(clients, client)
-// 			}
-// 			wg.Done()
-// 		}
-// 		wg.Wait()
-// 	}
-// 	mutex.Unlock()
-// }

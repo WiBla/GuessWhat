@@ -8,13 +8,16 @@
 	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
 </head>
 
 <body>
 	<v-app id="app">
 		<v-app-bar dense color="primary">
 			<v-toolbar-title>GuessWhat</v-toolbar-title>
+			<v-toolbar-items>
+				<v-btn flat><a href="/ping.html">Ping</a></v-btn>
+			</v-toolbar-items>
 		</v-app-bar>
 
 		<v-main class="fill-height">
@@ -40,9 +43,9 @@
 
 										<v-col cols="12">
 											<v-text-field
-												v-model.trim="username"
-												label="Username"
-												autocomplete="name"
+												v-model.trim="nickname"
+												label="Nickname"
+												autocomplete="nickname"
 
 												:counter="30"
 												:rules="nameRules"
@@ -51,7 +54,6 @@
 												@keyup.enter="join"
 											></v-text-field>
 										</v-col>
-
 
 										<v-col>
 											<v-btn class="float-right" color="primary" @click="join" :disabled="!valid">
@@ -68,15 +70,20 @@
 				<v-row v-if="joined">
 					<v-col cols="12">
 						<v-card>
-							<v-list disabled>
-								<v-subheader>CHAT</v-subheader>
+							<v-list id="chat-messages" disabled v-for="msg in chats">
+								<v-list-item v-if='msg.type === "alert"'>
+									<v-alert close-text="Close Alert" :type="msg.color" dark color="secondary" dense>
+										{{ msg.message }}
+									</v-alert>
+								</v-list-item>
 
-								<v-list-item two-line v-for="msg in chats" :key="msg.id" id="chat-messages">
+								<v-list-item v-if='msg.type === "message"' two-line>
 									<v-list-item-avatar>
 										<img :src="msg.avatar" />
 									</v-list-item-avatar>
+
 									<v-list-item-content>
-										<v-list-item-title>{{ msg.username }}</v-list-item-title>
+										<v-list-item-title>{{ msg.nickname }}</v-list-item-title>
 										<v-list-item-subtitle v-html="msg.message"></v-list-item-subtitle>
 									</v-list-item-content>
 								</v-list-item>
@@ -88,8 +95,24 @@
 				<v-row v-if="joined">
 					<v-col cols="12">
 						<v-card>
-							<v-form @submit.prevent="send">
+							<v-form @submit.prevent="changeNickname">
 								<v-container>
+									<v-row>
+										<v-col cols="2">
+											<v-text-field
+												v-model.trim="nickname"
+												label="New nickname"
+												autocomplete="off"
+
+												:placeholder="this.nickname"
+
+												:counter="30"
+
+												@keyup.enter="changeNickname"
+											></v-text-field>
+										</v-col>
+									</v-row>
+
 									<v-row>
 										<v-col cols="10">
 											<v-text-field

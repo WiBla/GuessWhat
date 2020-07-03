@@ -4,8 +4,8 @@
 ## Run
 `cd src/`  
 `go run main.go`  
-
-Launch http://localhost:8000
+  
+Launch [http://localhost:8000](localhost)  
 
 ## Run with hot-reload
 https://github.com/canthefason/go-watcher  
@@ -13,7 +13,7 @@ https://github.com/canthefason/go-watcher
 Once instaled, run:  
 `cd src/`  
 `watcher`  
-Enjoy!
+Enjoy!  
 
 ## Randword
 `cd src/`  
@@ -34,3 +34,17 @@ https://hobbylark.com/party-games/pictionary-words
 
 Go sync.WaitGroup Basics - tutorial  
 https://www.youtube.com/watch?v=0BPSR-W4GSY  
+
+
+{
+	type: "canvas",
+	draw: {
+		line: {
+			"fromX": 0,
+			"fromY": 0,
+
+			"toX": 0,
+			"toY": 0,
+		},
+	}
+}

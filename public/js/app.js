@@ -9,16 +9,16 @@ new Vue({
 	}),
 
 	data: {
-		ws: null,        // Our websocket
-		newMsg: '',      // Holds new messages to be sent to the server
-		chats: [],       // A running list of chat messages displayed on the screen
-		id: 0,           // To iterate on the messages
-		email: null,     // Email address used for grabbing an avatar
-		username: null,  // Our username
-		joined: false,   // True if email and username have been filled in
-		valid: true,     // Is the join form valid?
+		ws: null,
+		email: null,
+		nickname: null,
+		newMsg: '',
+		nickname: '',
+		chats: [],
+		joined: false,
+		valid: true,
 		nameRules: [
-			v => !!v || 'Username is required',
+			v => !!v || 'Nickname is required',
 			v => (v && v.length <= 30) || 'Name must be less than 30 characters',
 		],
 		emailRules: [
@@ -31,12 +31,25 @@ new Vue({
 		this.ws = new WebSocket('ws://' + window.location.host + '/ws');
 		this.ws.addEventListener('message', function(e) {
 			var msg = JSON.parse(e.data);
-			self.chats.push({
-				avatar: self.gravatarURL(msg.email),
-				username: msg.username,
-				message: emojione.toImage(msg.message),
-				id: self.id++,
-			});
+
+			switch(msg.type) {
+				case "message":
+					self.chats.push({
+						type: "message",
+						avatar: self.gravatarURL(msg.email),
+						nickname: msg.nickname,
+						message: emojione.toImage(msg.message),
+					});
+				break;
+
+				case "nickname":
+					self.chats.push({
+						type: "alert",
+						color: "info",
+						message: `Someone changed their nickname to ${msg.nickname}`,
+					});
+				break;
+			}
 
 			// var chat = document.getElementById('chat-messages');
 			// chat.scrollTop = chat.scrollHeight; // Auto scroll to the bottom
@@ -49,7 +62,7 @@ new Vue({
 					JSON.stringify({
 						type: "message",
 						email: this.email,
-						username: this.username,
+						nickname: this.nickname,
 						message: $('<p>').html(this.newMsg).text() // Strip out html
 					}
 				));
@@ -61,17 +74,17 @@ new Vue({
 
 			if (this.valid) {
 				this.email = $('<p>').html(this.email).text();
-				this.username = $('<p>').html(this.username).text();
+				this.nickname = $('<p>').html(this.nickname).text();
 				this.joined = true;
 			}
 		},
 		gravatarURL: function(email) {
 			return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
 		},
-		changeUsername() {
+		changeNickname() {
 			this.ws.send(JSON.stringify({
 				type: "nickname",
-				nickname: "",
+				nickname: this.nickname,
 			}));
 		}
 	}
