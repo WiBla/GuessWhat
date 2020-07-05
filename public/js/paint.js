@@ -1,8 +1,10 @@
 const $canvas = $('#canvas');
+const $canvas1 = $('#canvas1');
 const ctx = $canvas[0].getContext('2d');
+const ctx1 = $canvas1[0].getContext('2d');
 
-width = 800;
-height = 600;
+width = 400;
+height = 400;
 window.hist = [];
 window.mouse = {
 	x: 0,
@@ -77,7 +79,14 @@ function useTool(tool) {
 $('document').ready(() => {
 	$canvas.attr('width', width);
 	$canvas.attr('height', height);
+	$canvas1.attr('width', width);
+	$canvas1.attr('height', height);
 
+	$('input[name="color"]').click((event) => {
+		event.preventDefault();
+
+		color.value = event.target.value;
+	});
 	$('#brushSize').change((e) => {
 		brushSize = $(e.target).val();
 	});
@@ -103,17 +112,7 @@ $('document').ready(() => {
 
 		switch (tool) {
 			case 'line':
-			case 'rect-fill':
-			case 'rect-stroke':
-			case 'circle-fill':
-			case 'circle-stroke':
 				redraw();
-			break;
-
-			case 'color-picker':
-				if (mouse.pressed) {
-					lib.getColor(move);
-				}
 			break;
 
 			default:
@@ -127,4 +126,19 @@ $('document').ready(() => {
 	});
 	$canvas.mouseup(() => mouse.pressed = false);
 	$canvas.mouseleave(() => mouse.pressed = false);
+
+	// setInterval(function() {
+	// 	canvas.toBlob(function(blob) {
+	// 		var ctx = canvas1.getContext('2d');
+	// 		var img = new Image();
+
+	// 		img.onload = function() {
+	// 			ctx.clearRect(0, 0, width, height);
+	// 			ctx.drawImage(img, 0, 0);
+	// 		}
+
+	// 		img.src = URL.createObjectURL(blob);
+
+	// 	}, 'image/png', 0.5);
+	// }, 100);
 });

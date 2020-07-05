@@ -19,54 +19,54 @@
       <v-toolbar-title>GuessWhat</v-toolbar-title>
     </v-app-bar>
 
-    <v-main class="fill-height">
+    <v-main>
       <v-row>
-        <v-col cols="1"></v-col>
-        <v-col cols="1">
+        <v-col cols="1" offset="1">
           00:30
         </v-col>
         <v-col cols="1">
           Round x of y
         </v-col>
-        <v-col cols="2"></v-col>
-        <v-col cols="2" align="center" justify="center">
+        <v-col cols="2" offset="2" align="center" justify="center">
           <p>_ _ _ _ _ _ _</p>
         </v-col>
-        <v-col cols="5"></v-col>
-      </v-row>
+			</v-row>
+
       <v-row>
-        <v-col cols="1"></v-col>
         <v-col cols="2" class="mr-3">
           <v-row align="center">
             <v-card class="mx-auto" min-width="100%" tile>
-              <v-list :disabled="disabled" :dense="dense" :two-line="twoLine" :three-line="threeLine" :shaped="shaped"
-                :flat="flat" :subheader="subheader" :sub-group="subGroup" :nav="nav" :avatar="avatar"
-                :rounded="rounded">
+              <v-list>
                 <v-subheader>USERS</v-subheader>
                 <v-list-item-group v-model="item" color="primary">
-                  <v-list-item v-for="(item, i) in items" :key="i" :inactive="inactive">
-                    <v-list-item-avatar v-if="avatar">
+                  <v-list-item v-for="(item, i) in items" :key="i">
+                    <v-list-item-avatar>
                       <v-img :src="item.avatar"></v-img>
                     </v-list-item-avatar>
                     <v-list-item-content>
-                      <v-list-item-title v-html="item.title"></v-list-item-title>
-                      <v-list-item-subtitle v-if="twoLine || threeLine" v-html="item.subtitle"></v-list-item-subtitle>
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
               </v-list>
             </v-card>
           </v-row>
-        </v-col>
+				</v-col>
+
         <v-col cols="5">
           <v-row align="center">
             <v-card class="mx-auto" min-width="100%" tile>
-              <canvas id="canvas">
+              <canvas id="canvas" v-show="drawing">
+                Your browser does not support the canvas technology.
+							</canvas>
+
+							<canvas id="canvas1" v-show="!drawing">
                 Your browser does not support the canvas technology.
               </canvas>
             </v-card>
           </v-row>
-        </v-col>
+				</v-col>
+
         <v-col cols="3">
           <v-row style="overflow-y: scroll; height: 600px;">
             <v-col cols="12">
@@ -93,11 +93,10 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="1"></v-col>
-      </v-row>
+			</v-row>
+
       <v-row>
-        <v-col cols="3" class="mr-3"></v-col>
-        <v-col cols="5">
+        <v-col cols="5" offset="2">
           <v-row align="center">
 						<v-card class="mx-auto" min-width="100%" id="toolbar">
 							<v-row>
@@ -164,7 +163,8 @@
 							</v-row>
             </v-card>
           </v-row>
-        </v-col>
+				</v-col>
+
         <v-col cols="3">
           <v-row>
             <v-col cols="12">
@@ -178,29 +178,18 @@
         </v-col>
       </v-row>
     </v-main>
-
-    <v-footer app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+	<script>
+		Vue.config.productionTip = false;
+	</script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
   <script src="js/room.js"></script>
   <script src="js/paint.js"></script>
-
-  <script>
-    $(document).ready(function () {
-      $('input[name="color"]').click((event) => {
-        event.preventDefault();
-
-        color.value = event.target.value;
-      });
-    });
-  </script>
 </body>
 
 </html>
