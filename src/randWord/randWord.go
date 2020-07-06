@@ -1,15 +1,12 @@
-package main
+package randWord
 
 import (
 	"math/rand"
 	"time"
 )
 
-func main() {
-	chooseWord()
-}
-
-func chooseWord() {
+// func randWord() {
+func randWord() [3]string {
 	rand.Seed(time.Now().UnixNano())
 
 	var strArray [20]string
@@ -190,12 +187,11 @@ func chooseWord() {
 	hardPiWords[48] = "Game"
 	hardPiWords[49] = "Pirate"
 
-	index := rand.Intn(50)
-	println(hardPiWords[index])
+	var result [3]string
 
-	index1 := rand.Intn(50)
-	println(mediumPiWords[index1])
+	result[0] = easyPiWords[rand.Intn(50)]
+	result[1] = mediumPiWords[rand.Intn(50)]
+	result[2] = hardPiWords[rand.Intn(50)]
 
-	index2 := rand.Intn(50)
-	println(easyPiWords[index2])
+	return result
 }

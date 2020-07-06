@@ -19,7 +19,7 @@
       <v-toolbar-title>GuessWhat</v-toolbar-title>
     </v-app-bar>
 
-    <v-main>
+    <v-main class="fill-height">
       <v-row>
         <v-col cols="1" offset="1">
           00:30
@@ -28,7 +28,7 @@
           Round x of y
         </v-col>
         <v-col cols="2" offset="2" align="center" justify="center">
-          <p>_ _ _ _ _ _ _</p>
+          <p id="guessWord">_ _ _ _ _ _ _</p>
         </v-col>
 			</v-row>
 
@@ -68,7 +68,7 @@
 				</v-col>
 
         <v-col cols="3">
-          <v-row style="overflow-y: scroll; height: 600px;">
+          <v-row style="overflow-y: scroll; height: 400px;">
             <v-col cols="12">
               <v-card>
                 <v-list id="chat-messages" disabled v-for="msg in chats">
@@ -123,42 +123,42 @@
 									</v-btn>
 								</v-col>
 
-								<v-col cols="12">
-									<input name="color" type="color" value="#000000">
-									<input name="color" type="color" value="#404040">
-									<input name="color" type="color" value="#FF0000">
-									<input name="color" type="color" value="#FF6A00">
-									<input name="color" type="color" value="#FFD800">
-									<input name="color" type="color" value="#B6FF00">
-									<input name="color" type="color" value="#4CFF00">
-									<input name="color" type="color" value="#00FF21">
-									<input name="color" type="color" value="#00FF90">
-									<input name="color" type="color" value="#00FFFF">
-									<input name="color" type="color" value="#0094FF">
-									<input name="color" type="color" value="#0026FF">
-									<input name="color" type="color" value="#4800FF">
-									<input name="color" type="color" value="#B200FF">
-									<input name="color" type="color" value="#FF00DC">
-									<input name="color" type="color" value="#FF006E">
+								<v-col cols="12" class="py-0">
+									<span name="color" data-value="#000000" style="--bg-color: #000000"></span>
+									<span name="color" data-value="#404040" style="--bg-color: #404040"></span>
+									<span name="color" data-value="#FF0000" style="--bg-color: #FF0000"></span>
+									<span name="color" data-value="#FF6A00" style="--bg-color: #FF6A00"></span>
+									<span name="color" data-value="#FFD800" style="--bg-color: #FFD800"></span>
+									<span name="color" data-value="#B6FF00" style="--bg-color: #B6FF00"></span>
+									<span name="color" data-value="#4CFF00" style="--bg-color: #4CFF00"></span>
+									<span name="color" data-value="#00FF21" style="--bg-color: #00FF21"></span>
+									<span name="color" data-value="#00FF90" style="--bg-color: #00FF90"></span>
+									<span name="color" data-value="#00FFFF" style="--bg-color: #00FFFF"></span>
+									<span name="color" data-value="#0094FF" style="--bg-color: #0094FF"></span>
+									<span name="color" data-value="#0026FF" style="--bg-color: #0026FF"></span>
+									<span name="color" data-value="#4800FF" style="--bg-color: #4800FF"></span>
+									<span name="color" data-value="#B200FF" style="--bg-color: #B200FF"></span>
+									<span name="color" data-value="#FF00DC" style="--bg-color: #FF00DC"></span>
+									<span name="color" data-value="#FF006E" style="--bg-color: #FF006E"></span>
 								</v-col>
 
-								<v-col cols="12">
-									<input name="color" type="color" value="#FFFFFF">
-									<input name="color" type="color" value="#808080">
-									<input name="color" type="color" value="#7F0000">
-									<input name="color" type="color" value="#7F3300">
-									<input name="color" type="color" value="#7F6A00">
-									<input name="color" type="color" value="#5B7F00">
-									<input name="color" type="color" value="#267F00">
-									<input name="color" type="color" value="#007F0E">
-									<input name="color" type="color" value="#007F46">
-									<input name="color" type="color" value="#007F7F">
-									<input name="color" type="color" value="#004A7F">
-									<input name="color" type="color" value="#00137F">
-									<input name="color" type="color" value="#21007F">
-									<input name="color" type="color" value="#57007F">
-									<input name="color" type="color" value="#7F006E">
-									<input name="color" type="color" value="#7F0037">
+								<v-col cols="12" class="py-0">
+									<span name="color" data-value="#FFFFFF" style="--bg-color: #FFFFFF"></span>
+									<span name="color" data-value="#808080" style="--bg-color: #808080"></span>
+									<span name="color" data-value="#7F0000" style="--bg-color: #7F0000"></span>
+									<span name="color" data-value="#7F3300" style="--bg-color: #7F3300"></span>
+									<span name="color" data-value="#7F6A00" style="--bg-color: #7F6A00"></span>
+									<span name="color" data-value="#5B7F00" style="--bg-color: #5B7F00"></span>
+									<span name="color" data-value="#267F00" style="--bg-color: #267F00"></span>
+									<span name="color" data-value="#007F0E" style="--bg-color: #007F0E"></span>
+									<span name="color" data-value="#007F46" style="--bg-color: #007F46"></span>
+									<span name="color" data-value="#007F7F" style="--bg-color: #007F7F"></span>
+									<span name="color" data-value="#004A7F" style="--bg-color: #004A7F"></span>
+									<span name="color" data-value="#00137F" style="--bg-color: #00137F"></span>
+									<span name="color" data-value="#21007F" style="--bg-color: #21007F"></span>
+									<span name="color" data-value="#57007F" style="--bg-color: #57007F"></span>
+									<span name="color" data-value="#7F006E" style="--bg-color: #7F006E"></span>
+									<span name="color" data-value="#7F0037" style="--bg-color: #7F0037"></span>
 								</v-col>
 							</v-row>
             </v-card>
@@ -191,5 +191,14 @@
   <script src="js/room.js"></script>
   <script src="js/paint.js"></script>
 </body>
+
+<style>
+	span[name="color"] {
+		display: inline-block;
+		width: calc((100% / 16) - (60px / 16));
+		height: 30px;
+		background-color: var(--bg-color);
+	}
+</style>
 
 </html>

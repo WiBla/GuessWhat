@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"github.com/gorilla/websocket"
+	// "os/exec"
+	// "guesswhat/src/randWord"
 )
 
 var clients = make(map[*websocket.Conn]bool) // Connected clients
@@ -32,31 +34,6 @@ type Nickname struct {
 	Nickname string `json:"nickname"`
 }
 
-// User ...
-type User struct {
-	Nickname string "nickname"
-	// Add is_drawing boolean attribute
-	IsDrawing bool
-}
-
-// Point ...
-type Point struct {
-	X int `json:"x"`
-	Y int `json:"y"`
-}
-
-// Stroke ...
-type Stroke struct {
-	UserID string  `json:"userId"`
-	Points []Point `json:"points"`
-	Finish bool    `json:"finish"`
-}
-
-// Clear ...
-type Clear struct {
-	UserID string `json:"userId"`
-}
-
 func main() {
 	// Create a simple server
 	fs := http.FileServer(http.Dir("../public"))
@@ -71,6 +48,9 @@ func main() {
 	// var wg sync.WaitGroup
 	// go handleMessages(&wg)
 	// wg.Wait()
+
+	// log.Println(randWord())
+	// randWord()
 
 	go handleMessages()
 
@@ -125,10 +105,6 @@ func handleMessages() {
 	}
 }
 
-func handleDrawingDataJson () {
-
-}
-
 // func handleMessages(wg *sync.WaitGroup) {
 // 	mutex.Lock()
 // 	for {
@@ -150,3 +126,15 @@ func handleDrawingDataJson () {
 // 	}
 // 	mutex.Unlock()
 // }
+
+// func randWord() {
+// 	cmd := exec.Command("go run ./randWord/randWord.go")
+// 	err := cmd.Start()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	log.Printf("Waiting for command to finish...")
+// 	err = cmd.Wait()
+// 	log.Printf("Command finished with error: %v", err)
+// }
+

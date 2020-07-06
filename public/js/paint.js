@@ -3,7 +3,7 @@ const $canvas1 = $('#canvas1');
 const ctx = $canvas[0].getContext('2d');
 const ctx1 = $canvas1[0].getContext('2d');
 
-width = 400;
+width = 800;
 height = 400;
 window.hist = [];
 window.mouse = {
@@ -82,10 +82,10 @@ $('document').ready(() => {
 	$canvas1.attr('width', width);
 	$canvas1.attr('height', height);
 
-	$('input[name="color"]').click((event) => {
+	$('[name="color"]').click((event) => {
 		event.preventDefault();
 
-		color.value = event.target.value;
+		color.value = event.target.dataset.value;
 	});
 	$('#brushSize').change((e) => {
 		brushSize = $(e.target).val();

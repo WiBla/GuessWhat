@@ -14,25 +14,141 @@
 </head>
 
 <body>
-  <v-app id="app">
-    <v-app-bar dense color="primary">
-      <v-toolbar-title>GuessWhat</v-toolbar-title>
-      <v-toolbar-items>
-        <v-btn flat><a href="/ping.html">Ping</a></v-btn>
-      </v-toolbar-items>
-    </v-app-bar>
+	<v-app id="app">
+		<v-app-bar
+      app
+      color="primary"
+      dark
+    >
+			<v-toolbar-title>GuessWhat</v-toolbar-title>
+			<v-subheader>{{ roomName }}</v-subheader>
+		</v-app-bar>
 
-    <v-footer app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+		<v-main>
+			<v-container>
+				<v-row>
+					<v-col cols="5" offset="2">
+						<v-card>
+							<v-card-title>
+								Settings
+							</v-card-title>
+
+							<v-form>
+								<v-container>
+									<v-row>
+										<v-col cols="12">
+											<v-text-field
+												label="Number of rounds"
+												type="number"
+												min="1"
+												max="10"
+												v-model="nbrOfRounds"
+											></v-text-field>
+										</v-col>
+
+										<v-col cols="12">
+											<v-text-field
+												label="Draw time in seconds"
+												type="number"
+												min="10"
+												max="320"
+												v-model="roundTime"
+											></v-text-field>
+
+											<v-textarea
+												label="Custom Words"
+												placeholder="Type your custom words here separated by a comma. (Minimum of 4 words, maximum of 30 characters per word)"
+											></v-textarea>
+										</v-col>
+									</v-row>
+								</v-container>
+							</v-form>
+
+							<v-card-actions>
+								<v-spacer></v-spacer>
+								<v-btn color="success">
+									Start!
+								</v-btn>
+							</v-card-actions>
+						</v-card>
+					</v-col>
+
+					<v-col cols="3">
+						<v-card>
+							<v-card-title>
+								Members
+							</v-card-title>
+
+							<v-list-item-group>
+								<v-list-item v-for="(user, i) in members" :key="i">
+									<v-list-item-avatar>
+										<v-img :src="gravatarURL(user.email)"></v-img>
+									</v-list-item-avatar>
+									<v-list-item-content>
+										<v-list-item-title>{{ user.nickname }}</v-list-item-title>
+									</v-list-item-content>
+								</v-list-item>
+							</v-list-item-group>
+						</v-card>
+					</v-col>
+				</v-row>
+
+				<v-row>
+					<v-col cols="8" offset="2">
+						<v-card>
+							<v-card-title>
+								Invite your friends!
+							</v-card-title>
+						</v-card>
+					</v-col>
+				</v-row>
+			</v-container>
+		</v-main>
   </v-app>
 
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+	<script>
+		Vue.config.productionTip = false;
+		Vue.config.devtools = true;
+	</script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-  <script src="js/app.js"></script>
+  <script>
+		new Vue({
+			el: '#app',
+			vuetify: new Vuetify({
+				theme: {
+					dark: true,
+				}
+			}),
+			data: () => ({
+				roomName: "This is just a	test",
+				nbrOfRounds: 3,
+				roundTime: 30,
+
+				members: [{
+					email: "contact.wibla@gmail.com",
+					nickname: "WiBla",
+					host: true
+				}, {
+					email: "schuller.jimmy@epitech.eu",
+					nickname: "Jimmy",
+					host: false
+				}, {
+					email: "",
+					nickname: "This is just a test",
+					host: false
+				}]
+			}),
+			methods: {
+				gravatarURL: function(email) {
+					return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
+				}
+			},
+		});
+	</script>
 </body>
 
 </html>

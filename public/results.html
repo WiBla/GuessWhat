@@ -15,24 +15,150 @@
 
 <body>
   <v-app id="app">
-    <v-app-bar dense color="primary">
+    <v-app-bar app dark color="primary">
       <v-toolbar-title>GuessWhat</v-toolbar-title>
-      <v-toolbar-items>
-        <v-btn flat><a href="/ping.html">Ping</a></v-btn>
-      </v-toolbar-items>
     </v-app-bar>
 
-    <v-footer app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    <v-main>
+      <v-container>
+        <v-row>
+          <v-col cols="6" offset="3">
+            <v-card>
+              <v-card-title>Results</v-card-title>
+              <v-row>
+                <v-col id="player2" cols="2" offset="3" align-self="end">
+                  <span class="jesaispas">
+										<v-avatar>
+											<v-img :src="gravatarURL('contact.wibla@gmail.com')"></v-img>
+										</v-avatar>
+									</span>
+                  <div class="platform">2</div>
+                </v-col>
+                <v-col id="player1" cols="2" align-self="end">
+                  <span class="jesaispas">
+										<v-avatar>
+											<v-img :src="gravatarURL('contact.wibla@gmail.com')"></v-img>
+										</v-avatar>
+									</span>
+                  <div class="platform">1</div>
+                </v-col>
+                <v-col id="player3" cols="2" align-self="end">
+                  <span class="jesaispas">
+										<v-avatar>
+											<v-img :src="gravatarURL('contact.wibla@gmail.com')"></v-img>
+										</v-avatar>
+									</span>
+                  <div class="platform">3</div>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+				</v-row>
+
+				<v-row>
+					<v-col cols="6" offset="3">
+						<v-card>
+							<v-card-title>Honourable mention</v-card-title>
+
+							<v-list-item-group>
+								<v-list-item v-for="(pos, i) in score" :key="i" v-if="i >= 3">
+									<v-list-item-avatar>
+										<v-img :src="gravatarURL(pos.email)"></v-img>
+									</v-list-item-avatar>
+									<v-list-item-content>
+										<v-list-item-title>#{{ i+1 }} {{ pos.nickname }}</v-list-item-title>
+									</v-list-item-content>
+								</v-list-item>
+							</v-list-item-group>
+						</v-card>
+					</v-col>
+				</v-row>
+      </v-container>
+    </v-main>
   </v-app>
 
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+	<script>
+		Vue.config.productionTip = false;
+		Vue.config.devtools = true;
+	</script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-  <script src="js/app.js"></script>
 </body>
 
+<script>
+	new Vue({
+		el: '#app',
+		vuetify: new Vuetify({
+			theme: {
+				dark: true,
+			}
+		}),
+		data: () => ({
+			score: [{
+				email: "contact.wibla@gmail.com",
+				nickname: "WiBla",
+				host: true
+			}, {
+				email: "schuller.jimmy@epitech.eu",
+				nickname: "Jimmy",
+				host: false
+			}, {
+				email: "",
+				nickname: "This is just a test",
+				host: false
+			}, {
+				email: "",
+				nickname: "This is just a test",
+				host: false
+			}, {
+				email: "",
+				nickname: "This is just a test",
+				host: false
+			}]
+		}),
+		methods: {
+			gravatarURL: function(email) {
+				return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
+			}
+		},
+	});
+</script>
+
+<style>
+  #player1 {
+    height: 140px;
+    /* background-color: red; */
+  }
+
+  #player2 {
+    height: 110px;
+    /* background-color: blue; */
+  }
+
+  #player3 {
+    height: 80px;
+    /* background-color: yellow; */
+  }
+
+  .jesaispas {
+    width: 100%;
+    text-align: center;
+  }
+
+	.jesaispas,
+	.platform {
+		display: inline-block;
+		transform: translateY(-40px);
+	}
+
+  .platform {
+    background-color: lightgray;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+  }
+</style>
 </html>

@@ -37,7 +37,7 @@ new Vue({
 			v => (v && v.length <= 30) || 'Name must be less than 30 characters',
 		],
 
-		drawing: false,
+		drawing: true
 	}),
 	created: function() {
 		var self = this;
