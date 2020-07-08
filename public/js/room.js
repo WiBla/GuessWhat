@@ -9,19 +9,21 @@ new Vue({
 	}),
 
 	data: () => ({
-		item: 5,
-		items: [
+		users: [
 			{
 				avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
 				title: 'Julien Calcada',
+				drawing: true,
 			},
 			{
 				avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
 				title: 'Jimmy Schuller',
+				drawing: false,
 			},
 			{
 				avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
 				title: 'Julien Schneider',
+				drawing: false,
 			},
 		],
 		ws: null,
@@ -37,7 +39,8 @@ new Vue({
 			v => (v && v.length <= 30) || 'Name must be less than 30 characters',
 		],
 
-		drawing: true
+		drawing: false,
+		timeLeft: 90,
 	}),
 	created: function() {
 		var self = this;
@@ -95,6 +98,10 @@ new Vue({
 				}, 'image/png', 0.1);
 			}
 		}, 100, self);
+
+		setInterval(function(self) {
+			if (self.timeLeft > 0) self.timeLeft--;
+		}, 1000, this);
 	},
 	methods: {
 		send() {
@@ -140,6 +147,25 @@ new Vue({
 					useTool(tool);
 				break;
 			}
+		},
+		undo() {
+
+		},
+		redo() {
+
+		}
+	},
+	computed: {
+		timer: function() {
+			if (this.timeLeft <= 0) return "00:00";
+
+			let m = Math.floor(this.timeLeft / 60);
+			let s = this.timeLeft % 60;
+
+			if (m < 10) m = '0'+m;
+			if (s < 10) s = '0'+s;
+
+			return `${m}:${s}`;
 		}
 	}
 });

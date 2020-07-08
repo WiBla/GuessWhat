@@ -15,90 +15,126 @@
 
 <body>
   <v-app id="app">
-    <v-app-bar dense color="primary">
-      <v-toolbar-title>GuessWhat</v-toolbar-title>
+    <v-app-bar app color="primary" dark>
+			<v-toolbar-title>GuessWhat</v-toolbar-title>
+			<!-- <v-subheader>{{ roomName }}</v-subheader> -->
     </v-app-bar>
 
-    <v-main class="fill-height">
-      <v-row>
-        <v-col id="timer" cols="1" offset="1">
-          
-        </v-col>
-        <v-col cols="1">
-          Round x of y
-        </v-col>
-        <v-col cols="2" offset="2" align="center" justify="center">
-          <p id="guessWord">_ _ _ _ _ _ _</p>
-        </v-col>
-			</v-row>
+    <v-main>
+			<v-container>
+				<!-- First row (Header) -->
+				<v-row>
+					<v-col cols="12">
+						<v-card>
+							<v-row>
+								<v-col cols="2" align="center">
+									<span>Round 3/4</span>
+									<span>{{ timer }}</span>
+								</v-col>
 
-      <v-row>
-        <v-col cols="2" class="mr-3">
-          <v-row align="center">
-            <v-card class="mx-auto" min-width="100%" tile>
-              <v-list>
-                <v-subheader>USERS</v-subheader>
-                <v-list-item-group v-model="item" color="primary">
-                  <v-list-item v-for="(item, i) in items" :key="i">
-                    <v-list-item-avatar>
-                      <v-img :src="item.avatar"></v-img>
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-            </v-card>
-          </v-row>
-				</v-col>
+								<v-col cols="6" align="center">
+									<span id="guessWord">_ _ _ _ _ _ _</span>
+								</v-col>
+							</v-row>
+						</v-card>
+					</v-col>
 
-        <v-col cols="5">
-          <v-row align="center">
-            <v-card class="mx-auto" min-width="100%" tile>
-              <canvas id="canvas" v-show="drawing">
-                Your browser does not support the canvas technology.
+					<!-- Timer -->
+					<!-- <v-col cols="2" align="center">
+						<v-card>
+							<v-card-text id="timer"></v-card-text>
+						</v-card>
+					</v-col> -->
+
+					<!-- Game state -->
+					<!-- <v-col cols="6" align="center">
+						<v-card>
+							<v-card-title>
+								Round x of y
+							</v-card-title>
+
+							<v-card-text id="guessWord">
+								_ _ _ _ _ _ _
+							</v-card-text>
+						</v-card>
+					</v-col> -->
+				</v-row>
+
+				<!-- Main row -->
+				<v-row>
+					<!-- User List -->
+					<v-col cols="2">
+						<v-card class="mx-auto" min-width="100%" tile>
+							<v-card-title>USERS</v-card-title>
+							<v-list>
+								<v-list-item-group color="primary">
+									<v-list-item v-for="(user, i) in users" :key="i">
+										<span class="d-flex" v-if="user.drawing">
+											<v-list-item-avatar>
+												<v-img :src="user.avatar"></v-img>
+											</v-list-item-avatar>
+											<v-list-item-content>
+												<v-list-item-title>{{ user.title }}</v-list-item-title>
+											</v-list-item-content>
+											<v-icon right>mdi-draw</v-icon>
+										</span>
+										<span class="d-flex" v-else>
+											<v-list-item-avatar>
+												<v-img :src="user.avatar"></v-img>
+											</v-list-item-avatar>
+											<v-list-item-content>
+												<v-list-item-title>{{ user.title }}</v-list-item-title>
+											</v-list-item-content>
+										</span>
+									</v-list-item>
+								</v-list-item-group>
+							</v-list>
+						</v-card>
+					</v-col>
+
+					<!-- Play area -->
+					<v-col cols="6">
+						<v-card class="mx-auto" min-width="100%" tile>
+							<canvas id="canvas" v-show="drawing">
+								Your browser does not support the canvas technology.
 							</canvas>
 
 							<canvas id="canvas1" v-show="!drawing">
-                Your browser does not support the canvas technology.
-              </canvas>
-            </v-card>
-          </v-row>
-				</v-col>
+								Your browser does not support the canvas technology.
+							</canvas>
+						</v-card>
+					</v-col>
 
-        <v-col cols="3">
-          <v-row style="overflow-y: scroll; height: 400px;">
-            <v-col cols="12">
-              <v-card>
-                <v-list id="chat-messages" disabled v-for="msg in chats">
-                  <v-list-item v-if='msg.type === "alert"'>
-                    <v-alert close-text="Close Alert" :type="msg.color" dark color="secondary" dense>
-                      {{ msg.message }}
-                    </v-alert>
-                  </v-list-item>
+					<!-- Chat -->
+					<v-col cols="3">
+						<v-card>
+							<v-list id="chat-messages" disabled v-for="(msg, i) in chats" :key="i">
+								<v-list-item v-if='msg.type === "alert"'>
+									<v-alert close-text="Close Alert" :type="msg.color" dark color="secondary" dense>
+										{{ msg.message }}
+									</v-alert>
+								</v-list-item>
 
-                  <v-list-item v-if='msg.type === "message"' two-line>
-                    <v-list-item-avatar>
-                      <img :src="msg.avatar" />
-                    </v-list-item-avatar>
+								<v-list-item v-if='msg.type === "message"' two-line>
+									<v-list-item-avatar>
+										<img :src="msg.avatar" />
+									</v-list-item-avatar>
 
-                    <v-list-item-content>
-                      <v-list-item-title>{{ msg.nickname }}</v-list-item-title>
-                      <v-list-item-subtitle v-html="msg.message"></v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-col>
-			</v-row>
+									<v-list-item-content>
+										<v-list-item-title>{{ msg.nickname }}</v-list-item-title>
+										<v-list-item-subtitle v-html="msg.message"></v-list-item-subtitle>
+									</v-list-item-content>
+								</v-list-item>
+							</v-list>
+						</v-card>
+					</v-col>
+				</v-row>
 
-      <v-row>
-        <v-col cols="5" offset="2">
-          <v-row align="center">
-						<v-card class="mx-auto" min-width="100%" id="toolbar">
+				<!-- Special row -->
+				<v-row>
+					<!-- Tools -->
+					<v-col cols="6" offset="2">
+						<v-card id="toolbar" v-show="drawing">
 							<v-row>
 								<v-col cols="12">
 									<v-btn>
@@ -109,18 +145,59 @@
 									<input type="range" class="custom-range" min="1" max="50" step="1" value="10" id="brushSize">
 									<v-icon right>mdi-format-font-size-increase</v-icon>
 
-									<v-btn @click="tool('pencil')">
-										<v-icon left>mdi-pencil</v-icon> Pencil
-									</v-btn>
-									<v-btn @click="tool('eraser')">
-										<v-icon left>mdi-eraser</v-icon> Eraser
-									</v-btn>
-									<v-btn @click="tool('fill')">
-										<v-icon left>mdi-format-color-fill</v-icon> Fill all
-									</v-btn>
-									<v-btn @click="tool('clear')">
-										<v-icon left>mdi-delete</v-icon> Clear
-									</v-btn>
+									<v-tooltip top open-delay="500">
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn @click="tool('pencil')" v-bind="attrs" v-on="on">
+												<v-icon>mdi-pencil</v-icon>
+											</v-btn>
+										</template>
+										<span>Pencil</span>
+									</v-tooltip>
+
+									<v-tooltip top open-delay="500">
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn @click="tool('eraser')" v-bind="attrs" v-on="on">
+												<v-icon>mdi-eraser</v-icon>
+											</v-btn>
+										</template>
+										<span>Eraser</span>
+									</v-tooltip>
+
+									<v-tooltip top open-delay="500">
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn @click="tool('fill')" v-bind="attrs" v-on="on">
+												<v-icon>mdi-format-color-fill</v-icon>
+											</v-btn>
+										</template>
+										<span>Fill all</span>
+									</v-tooltip>
+
+									<v-tooltip top open-delay="500">
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn @click="tool('clear')" v-bind="attrs" v-on="on">
+												<v-icon>mdi-delete</v-icon>
+											</v-btn>
+										</template>
+										<span>Clear</span>
+									</v-tooltip>
+
+									<v-tooltip top open-delay="500">
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn @click="undo" v-bind="attrs" v-on="on" disabled>
+												<v-icon>mdi-undo</v-icon>
+											</v-btn>
+										</template>
+										<span>Undo</span>
+									</v-tooltip>
+
+									<v-tooltip top open-delay="500">
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn @click="redo" v-bind="attrs" v-on="on" disabled>
+												<v-icon>mdi-redo</v-icon>
+											</v-btn>
+										</template>
+										<span>Redo</span>
+									</v-tooltip>
 								</v-col>
 
 								<v-col cols="12" class="py-0">
@@ -161,28 +238,31 @@
 									<span name="color" data-value="#7F0037" style="--bg-color: #7F0037"></span>
 								</v-col>
 							</v-row>
-            </v-card>
-          </v-row>
-				</v-col>
+						</v-card>
+					</v-col>
 
-        <v-col cols="3">
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                v-model.trim="newMsg"
-                autocomplete="off"
-                @keyup.enter="send">
-              </v-text-field>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
+					<!-- Chat input -->
+					<v-col cols="3">
+						<v-card>
+							<v-container>
+								<v-text-field
+									v-model.trim="newMsg"
+									autocomplete="off"
+									placeholder="Guess the word!"
+									@keyup.enter="send">
+								</v-text-field>
+							</v-container>
+						</v-card>
+					</v-col>
+				</v-row>
+			</v-container>
     </v-main>
   </v-app>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
 	<script>
 		Vue.config.productionTip = false;
+		Vue.config.devtools = true;
 	</script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Test avec Iris</title>
+</head>
+<body>
+	<input type="text" id="input">
+	<button onclick="send()">Envoyer</button>
+	<pre id="output"></pre>
+
+	<script src="/socket-iris.js"></script>
+	<script>
+		var socket = new Ws("ws://localhost:1234/sock");
+
+		socket.OnConnect(() => {
+			output.innerHTML += "Connecté\n"
+		})
+
+		socket.OnDisconnect(() => {
+			output.innerHTML += "Deconnecté\n"
+		})
+
+		socket.On("serverMessage", (msg) => {
+			output.innerHTML += msg + "\n";
+		})
+
+		function send() {
+			output.innerHTML += "Me: " + input.value + "\n";
+			socket.Emit("clientMessage", input.value);
+			input.value = "";
+		}
+	</script>
+</body>
+</html>

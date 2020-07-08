@@ -1,35 +1,12 @@
-package randWord
+package randword
 
 import (
 	"math/rand"
 	"time"
 )
 
-// func randWord() {
-func randWord() [3]string {
+func Randword() ([3]string) {
 	rand.Seed(time.Now().UnixNano())
-
-	var strArray [20]string
-	strArray[0] = "super-glue"
-	strArray[1] = "velo"
-	strArray[2] = "voiture"
-	strArray[3] = "chaussure"
-	strArray[4] = "disjoncteur"
-	strArray[5] = "eglise"
-	strArray[6] = "machine a laver"
-	strArray[7] = "aspirateur"
-	strArray[8] = "ecrevisse"
-	strArray[9] = "koala"
-	strArray[10] = "montre a gousset"
-	strArray[11] = "jagermeister"
-	strArray[12] = "trepied"
-	strArray[13] = "mirroir"
-	strArray[14] = "starbucks"
-	strArray[15] = "costume"
-	strArray[16] = "ange"
-	strArray[17] = "espace"
-	strArray[18] = "eclipse"
-	strArray[19] = "ceinture"
 
 	var easyPiWords [50]string
 	easyPiWords[0] = "Angel"

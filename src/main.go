@@ -3,14 +3,15 @@ package main
 import (
 	"log"
 	"net/http"
-	"github.com/gorilla/websocket"
-	// "os/exec"
+	"sync"
+
 	// "guesswhat/src/randWord"
+	"github.com/gorilla/websocket"
 )
 
 var clients = make(map[*websocket.Conn]bool) // Connected clients
 var broadcast = make(chan Message)           // Broadcast channel
-// var mutex sync.Mutex
+var mutex sync.Mutex
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{}
@@ -45,14 +46,12 @@ func main() {
 	// Start listening for incoming chat messages
 	// On protège les variables globales utilisées dans nos routines à l'aide
 	// de mutex, qui bloque chaque ressources quand elles sont accédée
-	// var wg sync.WaitGroup
-	// go handleMessages(&wg)
-	// wg.Wait()
+	var wg sync.WaitGroup
+	go handleMessages(&wg)
+	wg.Wait()
 
 	// log.Println(randWord())
 	// randWord()
-
-	go handleMessages()
 
 	log.Println("http server started on :8000")
 	err := http.ListenAndServe(":8000", nil)
@@ -72,7 +71,9 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	defer ws.Close()
 
 	// Register our new client
+	mutex.Lock();
 	clients[ws] = true
+	mutex.Unlock();
 
 	for {
 		var msg Message
@@ -89,27 +90,8 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleMessages() {
-	for {
-		// Grab the next message from the broadcast channel
-		msg := <-broadcast
-		// Send it out to every client that is currently connected
-		for client := range clients {
-			err := client.WriteJSON(msg)
-			if err != nil {
-				log.Printf("error: %v", err)
-				client.Close()
-				delete(clients, client)
-			}
-		}
-	}
-}
-
-// func handleMessages(wg *sync.WaitGroup) {
-// 	mutex.Lock()
+// func handleMessages() {
 // 	for {
-// 		wg.Add(1)
-
 // 		// Grab the next message from the broadcast channel
 // 		msg := <-broadcast
 // 		// Send it out to every client that is currently connected
@@ -120,21 +102,27 @@ func handleMessages() {
 // 				client.Close()
 // 				delete(clients, client)
 // 			}
-// 			wg.Done()
 // 		}
-// 		wg.Wait()
 // 	}
-// 	mutex.Unlock()
 // }
 
-// func randWord() {
-// 	cmd := exec.Command("go run ./randWord/randWord.go")
-// 	err := cmd.Start()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Printf("Waiting for command to finish...")
-// 	err = cmd.Wait()
-// 	log.Printf("Command finished with error: %v", err)
-// }
-
+func handleMessages(wg *sync.WaitGroup) {
+	for {
+		wg.Add(1)
+		// Grab the next message from the broadcast channel
+		msg := <-broadcast
+		// Send it out to every client that is currently connected
+		for client := range clients {
+			err := client.WriteJSON(msg)
+			if err != nil {
+				log.Printf("error: %v", err)
+				client.Close()
+				mutex.Lock();
+				delete(clients, client)
+				mutex.Unlock();
+			}
+			wg.Done()
+		}
+		wg.Wait()
+	}
+}
