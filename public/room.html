@@ -10,14 +10,26 @@
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css" />
+	<style>
+		span[name="color"] {
+			display: inline-block;
+			width: calc((100% / 16) - (60px / 16));
+			height: 30px;
+			background-color: var(--bg-color);
+		}
+
+		#chat-container {
+			height: 600px;
+			overflow-y: scroll;
+		}
+	</style>
 </head>
 
 <body>
   <v-app id="app">
     <v-app-bar app color="primary" dark>
 			<v-toolbar-title>GuessWhat</v-toolbar-title>
-			<!-- <v-subheader>{{ roomName }}</v-subheader> -->
     </v-app-bar>
 
     <v-main>
@@ -33,31 +45,19 @@
 								</v-col>
 
 								<v-col cols="6" align="center">
-									<span id="guessWord">_ _ _ _ _ _ _</span>
+									<v-btn-toggle v-if="choosingWords.length">
+										<v-btn color="info">
+											<v-icon>mdi-tag</v-icon>
+										</v-btn>
+										<v-btn v-for="(word, i) in choosingWords" :key="i" color="info">
+											{{ word }}
+										</v-btn>
+									</v-btn-toggle>
+									<span v-else id="guessWord">_ _ _ _ _ _ _</span>
 								</v-col>
 							</v-row>
 						</v-card>
 					</v-col>
-
-					<!-- Timer -->
-					<!-- <v-col cols="2" align="center">
-						<v-card>
-							<v-card-text id="timer"></v-card-text>
-						</v-card>
-					</v-col> -->
-
-					<!-- Game state -->
-					<!-- <v-col cols="6" align="center">
-						<v-card>
-							<v-card-title>
-								Round x of y
-							</v-card-title>
-
-							<v-card-text id="guessWord">
-								_ _ _ _ _ _ _
-							</v-card-text>
-						</v-card>
-					</v-col> -->
 				</v-row>
 
 				<!-- Main row -->
@@ -67,24 +67,17 @@
 						<v-card class="mx-auto" min-width="100%" tile>
 							<v-card-title>USERS</v-card-title>
 							<v-list>
-								<v-list-item-group color="primary">
-									<v-list-item v-for="(user, i) in users" :key="i">
-										<span class="d-flex" v-if="user.drawing">
+								<v-list-item-group multiple>
+									<v-list-item v-for="(user, i) in users" :key="i" :color="(user.guess ? 'success' : '')" :class="user.guess ? 'v-item--active v-list-item--active' : ''">
+										<span class="d-flex">
 											<v-list-item-avatar>
 												<v-img :src="user.avatar"></v-img>
 											</v-list-item-avatar>
+											<v-icon v-if="user.host" left class="amber--text">mdi-police-badge</v-icon>
 											<v-list-item-content>
-												<v-list-item-title>{{ user.title }}</v-list-item-title>
+												<v-list-item-title>{{ user.nickname }}</v-list-item-title>
 											</v-list-item-content>
-											<v-icon right>mdi-draw</v-icon>
-										</span>
-										<span class="d-flex" v-else>
-											<v-list-item-avatar>
-												<v-img :src="user.avatar"></v-img>
-											</v-list-item-avatar>
-											<v-list-item-content>
-												<v-list-item-title>{{ user.title }}</v-list-item-title>
-											</v-list-item-content>
+											<v-icon v-if="user.drawing" right>mdi-draw</v-icon>
 										</span>
 									</v-list-item>
 								</v-list-item-group>
@@ -107,7 +100,7 @@
 
 					<!-- Chat -->
 					<v-col cols="3">
-						<v-card>
+						<v-card id="chat-container">
 							<v-list id="chat-messages" disabled v-for="(msg, i) in chats" :key="i">
 								<v-list-item v-if='msg.type === "alert"'>
 									<v-alert close-text="Close Alert" :type="msg.color" dark color="secondary" dense>
@@ -270,16 +263,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
   <script src="js/room.js"></script>
   <script src="js/paint.js"></script>
-  <script src="js/timer.js"></script>
 </body>
-
-<style>
-	span[name="color"] {
-		display: inline-block;
-		width: calc((100% / 16) - (60px / 16));
-		height: 30px;
-		background-color: var(--bg-color);
-	}
-</style>
 
 </html>

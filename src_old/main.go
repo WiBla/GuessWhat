@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 	"net/http"
+	// "guesswhat/src/randWord"
 
 	"github.com/gorilla/websocket"
+	"github.com/satori/go.uuid"
 )
 
 var clients = make(map[*websocket.Conn]bool) // Connected clients
@@ -13,12 +15,23 @@ var broadcast = make(chan Message)           // Broadcast channel
 // Configure the upgrader
 var upgrader = websocket.Upgrader{}
 
+// Type ...
+type Type struct {
+	Type string `json:"type"`
+}
+
 // Message ...
-// Define our message object
 type Message struct {
+	Type     string `json:"type"`
 	Email    string `json:"email"`
-	Username string `json:"username"`
+	Nickname string `json:"nickname"`
 	Message  string `json:"message"`
+}
+
+// Nickname ...
+type Nickname struct {
+	Type     string `json:"type"`
+	Nickname string `json:"nickname"`
 }
 
 func main() {
@@ -52,25 +65,53 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	// Register our new client
 	clients[ws] = true
 
-	// Façon de faire pour envoyer du JSON au websocket (inutile pour le ping-pong)
 	for {
 		var msg Message
-		// Read in a new message as JSON and map it to a Message object
+
 		err := ws.ReadJSON(&msg)
 		if err != nil {
 			log.Printf("error: %v", err)
 			delete(clients, ws)
 			break
 		}
+
 		// Send the newly received message to the broadcast channel
 		broadcast <- msg
 	}
+}
+
+type User struct {
+	Email string
+	Nickname string
+	Host bool
+	Drawing bool
+	Score int
+	Guess bool
+}
+
+type Room struct {
+	ID uuid.UUID
+	Name string
+	UserList map[string]User
+	Word string
+	RoundMax int
+	Round int
+	RoundDuration int
+	CustomWords string
 }
 
 func handleMessages() {
 	for {
 		// Grab the next message from the broadcast channel
 		msg := <-broadcast
+
+		// switch msg.Type {
+		// case CreateRoom:
+		// 	createRoom()
+		// case Message:
+
+		// }
+
 		// Send it out to every client that is currently connected
 		for client := range clients {
 			err := client.WriteJSON(msg)

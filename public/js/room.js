@@ -12,18 +12,24 @@ new Vue({
 		users: [
 			{
 				avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-				title: 'Julien Calcada',
+				nickname: 'Julien Calcada',
+				host: false,
 				drawing: true,
+				guess: false,
 			},
 			{
 				avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-				title: 'Jimmy Schuller',
+				nickname: 'Jimmy Schuller',
+				host: false,
 				drawing: false,
+				guess: false,
 			},
 			{
 				avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-				title: 'Julien Schneider',
+				nickname: 'Julien Schneider',
+				host: true,
 				drawing: false,
+				guess: true,
 			},
 		],
 		ws: null,
@@ -39,6 +45,7 @@ new Vue({
 			v => (v && v.length <= 30) || 'Name must be less than 30 characters',
 		],
 
+		choosingWords: ['one', 'two', 'three'],
 		drawing: false,
 		timeLeft: 90,
 	}),
@@ -46,6 +53,7 @@ new Vue({
 		var self = this;
 		this.ws = new WebSocket('ws://' + window.location.host + '/ws');
 		this.ws.addEventListener('message', function(e) {
+
 			var msg = JSON.parse(e.data);
 
 			switch(msg.type) {
@@ -81,6 +89,9 @@ new Vue({
 
 			// var chat = document.getElementById('chat-messages');
 			// chat.scrollTop = chat.scrollHeight; // Auto scroll to the bottom
+			setTimeout(() => {
+				document.getElementById("chat-container").scrollTop = document.getElementById("chat-container").scrollHeight;
+			}, 500);
 		});
 
 		setInterval(function() {

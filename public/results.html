@@ -11,6 +11,37 @@
 	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
+	<style>
+		#player1 {
+			height: 140px;
+		}
+
+		#player2 {
+			height: 110px;
+		}
+
+		#player3 {
+			height: 80px;
+		}
+
+		.jesaispas {
+			width: 100%;
+			text-align: center;
+		}
+
+		.jesaispas,
+		.platform {
+			display: inline-block;
+			transform: translateY(-40px);
+		}
+
+		.platform {
+			background-color: lightgray;
+			height: 100%;
+			width: 100%;
+			text-align: center;
+		}
+	</style>
 </head>
 
 <body>
@@ -85,80 +116,7 @@
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+	<script src="js/results.js"></script>
 </body>
-
-<script>
-	new Vue({
-		el: '#app',
-		vuetify: new Vuetify({
-			theme: {
-				dark: true,
-			}
-		}),
-		data: () => ({
-			score: [{
-				email: "contact.wibla@gmail.com",
-				nickname: "WiBla",
-				host: true
-			}, {
-				email: "schuller.jimmy@epitech.eu",
-				nickname: "Jimmy",
-				host: false
-			}, {
-				email: "",
-				nickname: "This is just a test",
-				host: false
-			}, {
-				email: "",
-				nickname: "This is just a test",
-				host: false
-			}, {
-				email: "",
-				nickname: "This is just a test",
-				host: false
-			}]
-		}),
-		methods: {
-			gravatarURL: function(email) {
-				return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
-			}
-		},
-	});
-</script>
-
-<style>
-  #player1 {
-    height: 140px;
-    /* background-color: red; */
-  }
-
-  #player2 {
-    height: 110px;
-    /* background-color: blue; */
-  }
-
-  #player3 {
-    height: 80px;
-    /* background-color: yellow; */
-  }
-
-  .jesaispas {
-    width: 100%;
-    text-align: center;
-  }
-
-	.jesaispas,
-	.platform {
-		display: inline-block;
-		transform: translateY(-40px);
-	}
-
-  .platform {
-    background-color: lightgray;
-    height: 100%;
-    width: 100%;
-    text-align: center;
-  }
-</style>
 </html>

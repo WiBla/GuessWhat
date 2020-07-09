@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GuessWhat - Dashboard</title>
+	<meta charset="UTF-8">
+	<title>GuessWhat</title>
 
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
@@ -14,119 +12,71 @@
 </head>
 
 <body>
-	<v-app id="app">
-		<v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <v-toolbar-title>GuessWhat</v-toolbar-title>
+	<v-app id="login">
+		<v-app-bar app color="primary" dark>
+			<v-toolbar-title>GuessWhat</v-toolbar-title>
 		</v-app-bar>
 
 		<v-main>
 			<v-container>
 				<v-row>
-					<v-col cols="6" offset="3">
-						<v-card>
-							<v-card-title>Create a room</v-card-title>
-
-							<v-container>
-								<v-text-field
-									v-model="roomName"
-									label="Room name"
-								>
-								</v-text-field>
-							</v-container>
-						</v-card>
-					</v-col>
-
 					<v-col cols="12">
-						<v-row>
-							<v-col cols="3" v-for="(room, index) in rooms" :key="index">
-								<v-card>
-									<v-img src="https://farm1.staticflickr.com/513/18304600108_9e92fa2cfd_b.jpg"></v-img>
-									<v-card-title>{{ room.name }}</v-card-title>
+						<v-card class="mx-auto" max-width="400">
+							<v-card-title>Profil creation</v-card-title>
+							<v-form ref="form" v-model="valid" lazy-validation @submit.prevent="join">
+								<v-container>
+									<v-row>
+										<v-col cols="12">
+											<v-text-field
+												v-model.trim="nickname"
+												label="Nickname"
+												autocomplete="nickname"
 
-									<v-card-subtitle>Hosted by: WiBla</v-card-subtitle>
+												:counter="30"
+												:rules="nameRules"
+												required
 
-									<v-card-actions>
-										<v-spacer></v-spacer>
-										<v-btn color="primary">
-											<a href="/lobby.html" class="text--primary text-decoration-none">Join</a>
-										</v-btn>
-									</v-card-actions>
-								</v-card>
-							</v-col>
-						</v-row>
+												@keyup.enter="join"
+											></v-text-field>
+										</v-col>
+
+										<v-col cols="12">
+											<v-text-field
+												v-model.trim="email"
+												label="Email (only for an avatar)"
+												autocomplete="email"
+
+												:rules="emailRules"
+												required
+
+												@keyup.enter="join"
+											></v-text-field>
+										</v-col>
+
+										<v-col>
+											<v-btn class="float-right" color="primary" @click="join" :disabled="!valid">
+												Join <v-icon right>mdi-check</v-icon>
+											</v-btn>
+										</v-col>
+									</v-row>
+								</v-container>
+							</v-form>
+						</v-card>
 					</v-col>
 				</v-row>
 			</v-container>
 		</v-main>
-  </v-app>
+	</v-app>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
 	<script>
 		Vue.config.productionTip = false;
 		Vue.config.devtools = true;
 	</script>
-  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-  <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-  <script>
-		new Vue({
-			el: '#app',
-			vuetify: new Vuetify({
-				theme: {
-					dark: true,
-				}
-			}),
-			data: () => ({
-				roomName: "",
-				rooms: [{
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				},{
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				},{
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				},{
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				},{
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				}, {
-					name: "This is just a test"
-				},]
-			}),
-		});
-	</script>
+	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+	<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+  <script src="js/index.js"></script>
 </body>
-
 </html>

@@ -15,11 +15,7 @@
 
 <body>
 	<v-app id="app">
-		<v-app-bar
-      app
-      color="primary"
-      dark
-    >
+		<v-app-bar app color="primary" dark>
 			<v-toolbar-title>GuessWhat</v-toolbar-title>
 			<v-subheader>{{ roomName }}</v-subheader>
 		</v-app-bar>
@@ -114,41 +110,8 @@
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-  <script>
-		new Vue({
-			el: '#app',
-			vuetify: new Vuetify({
-				theme: {
-					dark: true,
-				}
-			}),
-			data: () => ({
-				roomName: "This is just a	test",
-				nbrOfRounds: 3,
-				roundTime: 30,
-
-				members: [{
-					email: "contact.wibla@gmail.com",
-					nickname: "WiBla",
-					host: true
-				}, {
-					email: "schuller.jimmy@epitech.eu",
-					nickname: "Jimmy",
-					host: false
-				}, {
-					email: "",
-					nickname: "This is just a test",
-					host: false
-				}]
-			}),
-			methods: {
-				gravatarURL: function(email) {
-					return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
-				}
-			},
-		});
-	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+	<script src="/js/lobby.js"></script>
 </body>
 
 </html>

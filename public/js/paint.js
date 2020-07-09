@@ -126,19 +126,4 @@ $('document').ready(() => {
 	});
 	$canvas.mouseup(() => mouse.pressed = false);
 	$canvas.mouseleave(() => mouse.pressed = false);
-
-	// setInterval(function() {
-	// 	canvas.toBlob(function(blob) {
-	// 		var ctx = canvas1.getContext('2d');
-	// 		var img = new Image();
-
-	// 		img.onload = function() {
-	// 			ctx.clearRect(0, 0, width, height);
-	// 			ctx.drawImage(img, 0, 0);
-	// 		}
-
-	// 		img.src = URL.createObjectURL(blob);
-
-	// 	}, 'image/png', 0.5);
-	// }, 100);
 });

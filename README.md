@@ -20,9 +20,9 @@ Enjoy!
 `go run randWord/randWord.go`  
 
 ## Ping-Pong
-`cd src/`  
-`go run ping/main.go`  
-`http://localhost:8000/ping.html`  
+`cd /ping`  
+`go run src/main.go`  
+Launch [http://localhost:8000](localhost)  
 Enjoy!  
 
 # Doc
