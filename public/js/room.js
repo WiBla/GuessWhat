@@ -11,34 +11,37 @@ new Vue({
 	data: () => ({
 		users: [
 			{
-				avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
+				email: 'julien.calcada@gmail.com',
 				nickname: 'Julien Calcada',
 				host: false,
 				drawing: true,
 				guess: false,
+				score: 1337,
 			},
 			{
-				avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-				nickname: 'Jimmy Schuller',
+				email: 'contact.wibla@gmail.com',
+				nickname: 'WiBla',
 				host: false,
 				drawing: false,
 				guess: false,
+				score: 420,
 			},
 			{
-				avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
+				email: 'julien.schneider@gmail.com',
 				nickname: 'Julien Schneider',
 				host: true,
 				drawing: false,
 				guess: true,
+				score: 6969,
 			},
 		],
 		ws: null,
-		email: null,
-		nickname: null,
+
+		nickname: "WiBla",
+		email: "contact.wibla@gmail.com",
+
 		newMsg: '',
-		nickname: '',
 		chats: [],
-		joined: false,
 		valid: true,
 		nameRules: [
 			v => !!v || 'Nickname is required',
@@ -47,7 +50,7 @@ new Vue({
 
 		choosingWords: ['one', 'two', 'three'],
 		drawing: false,
-		timeLeft: 90,
+		timeLeft: 15,
 	}),
 	created: function() {
 		var self = this;
@@ -70,7 +73,7 @@ new Vue({
 					self.chats.push({
 						type: "alert",
 						color: "info",
-						message: `Someone changed their nickname to ${msg.nickname}`,
+						message: `${msg.oldnick} changed their nickname to ${msg.nickname}`,
 					});
 				break;
 
@@ -92,6 +95,14 @@ new Vue({
 			setTimeout(() => {
 				document.getElementById("chat-container").scrollTop = document.getElementById("chat-container").scrollHeight;
 			}, 500);
+		});
+
+		this.ws.addEventListener('error', function(e) {
+			console.error("[WebSocket]: ", e);
+		});
+
+		this.ws.addEventListener('close', function() {
+			location.reload();
 		});
 
 		setInterval(function() {
@@ -117,26 +128,44 @@ new Vue({
 	methods: {
 		send() {
 			if (this.newMsg != '') {
-				this.ws.send(
-					JSON.stringify({
-						type: "message",
-						email: this.email,
-						nickname: this.nickname,
-						message: $('<p>').html(this.newMsg).text() // Strip out html
-					}
-				));
-				this.newMsg = ''; // Reset newMsg
-			}
-		},
-		join() {
-			this.$refs.form.validate();
+				if (this.newMsg.charAt(0) == "/") {
+					var args = this.newMsg.split(' ');
+					cmd = args.shift().slice(1);
+					var msg = args.join(' ');
 
-			if (this.valid) {
-				this.email = $('<p>').html(this.email).text();
-				this.nickname = $('<p>').html(this.nickname).text();
-				this.joined = true;
+					switch(cmd) {
+						case "nick":
+							this.ws.send(JSON.stringify({
+								type: "nickname",
+								oldnick: this.nickname,
+								nickname: args[0],
+							}));
+							this.nickname = args[0];
+							break;
+					}
+				} else {
+					this.ws.send(
+						JSON.stringify({
+							type: "message",
+							email: this.email,
+							nickname: this.nickname,
+							message: this.newMsg
+						})
+					);
+				}
+
+				this.newMsg = '';
 			}
 		},
+		// join() {
+		// 	this.$refs.form.validate();
+
+		// 	if (this.valid) {
+		// 		this.email = $('<p>').html(this.email).text();
+		// 		this.nickname = $('<p>').html(this.nickname).text();
+		// 		this.joined = true;
+		// 	}
+		// },
 		gravatarURL(email) {
 			return 'http://www.gravatar.com/avatar/' + CryptoJS.MD5(email);
 		},
@@ -160,10 +189,16 @@ new Vue({
 			}
 		},
 		undo() {
+			if (!window.hist.length) return;
 
+			window.undoHist.push(window.hist.pop());
+			redraw();
 		},
 		redo() {
+			if (!window.undoHist.length) return;
 
+			window.hist.push(window.undoHist.pop());
+			redraw();
 		}
 	},
 	computed: {

@@ -1,4 +1,4 @@
-module guesswhat/src_old
+module guesswhat
 
 go 1.14
 

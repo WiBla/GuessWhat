@@ -3,9 +3,10 @@ const $canvas1 = $('#canvas1');
 const ctx = $canvas[0].getContext('2d');
 const ctx1 = $canvas1[0].getContext('2d');
 
-width = 800;
-height = 400;
+width = 768;
+height = 432;
 window.hist = [];
+window.undoHist = [];
 window.mouse = {
 	x: 0,
 	y: 0,
@@ -83,8 +84,6 @@ $('document').ready(() => {
 	$canvas1.attr('height', height);
 
 	$('[name="color"]').click((event) => {
-		event.preventDefault();
-
 		color.value = event.target.dataset.value;
 	});
 	$('#brushSize').change((e) => {
@@ -104,26 +103,36 @@ $('document').ready(() => {
 		redraw();
 	});
 	$canvas.mousemove((move) => {
-		const x = move.offsetX;
-		const y = move.offsetY;
-		const tool = mouse.tool;
+		mouse.x = move.offsetX;
+		mouse.y = move.offsetY;
 		const color = $('#color').val();
-		mouse = { x,y,pressed: mouse.pressed, tool: mouse.tool };
 
-		switch (tool) {
+		if (
+			mouse.x < 0 || mouse.x > width ||
+			mouse.y < 0 || mouse.y > height) {
+			mouse.pressed = false;
+		}
+
+		switch (mouse.tool) {
 			case 'line':
 				redraw();
 			break;
 
 			default:
 				if (mouse.pressed) {
-					hist.push({ x,y,pressed:true,tool,color,brushSize });
+					hist.push({
+						x: mouse.x,
+						y: mouse.y,
+						pressed: mouse.pressed,
+						tool: mouse.tool,
+						color: mouse.color,
+						brushSize
+					});
 
 					redraw();
 				}
 			break;
 		}
 	});
-	$canvas.mouseup(() => mouse.pressed = false);
-	$canvas.mouseleave(() => mouse.pressed = false);
+	$(window).mouseup(() => mouse.pressed = false);
 });

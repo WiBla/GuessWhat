@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GuessWhat - Room</title>
+
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
+	<title>GuessWhat - Room</title>
 
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
@@ -20,9 +22,20 @@
 		}
 
 		#chat-container {
-			height: 600px;
+			height: 465px;
 			overflow-y: scroll;
 		}
+
+		canvas {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			outline: none;
+
+			border: 1px dashed grey;
+    }
 	</style>
 </head>
 
@@ -34,22 +47,23 @@
 
     <v-main>
 			<v-container>
-				<!-- First row (Header) -->
 				<v-row>
+					<!-- Header -->
 					<v-col cols="12">
 						<v-card>
 							<v-row>
-								<v-col cols="2" align="center">
-									<span>Round 3/4</span>
-									<span>{{ timer }}</span>
+								<v-col cols="2" align="center" style="border-right: 1px solid black">
+									<v-chip><v-icon left>mdi-counter</v-icon>Round 3/4</v-chip>
+									<v-chip :color="timeLeft <= 10 ? 'red' : ''"><v-icon left>mdi-alarm</v-icon>{{ timer }}</v-chip>
 								</v-col>
 
 								<v-col cols="6" align="center">
 									<v-btn-toggle v-if="choosingWords.length">
-										<v-btn color="info">
-											<v-icon>mdi-tag</v-icon>
+										<v-btn color="info" small disabled>
+											<v-icon left>mdi-tag</v-icon>
+											Choose a word
 										</v-btn>
-										<v-btn v-for="(word, i) in choosingWords" :key="i" color="info">
+										<v-btn v-for="(word, i) in choosingWords" :key="i" color="info" small>
 											{{ word }}
 										</v-btn>
 									</v-btn-toggle>
@@ -58,27 +72,26 @@
 							</v-row>
 						</v-card>
 					</v-col>
-				</v-row>
 
-				<!-- Main row -->
-				<v-row>
 					<!-- User List -->
 					<v-col cols="2">
 						<v-card class="mx-auto" min-width="100%" tile>
 							<v-card-title>USERS</v-card-title>
+
 							<v-list>
 								<v-list-item-group multiple>
-									<v-list-item v-for="(user, i) in users" :key="i" :color="(user.guess ? 'success' : '')" :class="user.guess ? 'v-item--active v-list-item--active' : ''">
-										<span class="d-flex">
-											<v-list-item-avatar>
-												<v-img :src="user.avatar"></v-img>
-											</v-list-item-avatar>
-											<v-icon v-if="user.host" left class="amber--text">mdi-police-badge</v-icon>
-											<v-list-item-content>
-												<v-list-item-title>{{ user.nickname }}</v-list-item-title>
-											</v-list-item-content>
-											<v-icon v-if="user.drawing" right>mdi-draw</v-icon>
-										</span>
+									<v-list-item v-for="(user, i) in users" :key="i" :color="(user.guess ? 'success' : '')" :class="user.guess ? 'v-item--active v-list-item--active' : ''" :ripple="false">
+										<v-list-item-avatar>
+											<v-img :src="gravatarURL(user.email)"></v-img>
+										</v-list-item-avatar>
+										<v-list-item-content>
+											<v-list-item-title>
+												<v-icon v-if="user.host" class="amber--text" small>mdi-police-badge</v-icon>
+												{{ user.nickname }}
+												<v-icon v-if="user.drawing">mdi-draw</v-icon>
+											</v-list-item-title>
+											<v-list-item-subtitle>Score: {{ user.score }}</v-list-item-subtitle>
+										</v-list-item-content>
 									</v-list-item>
 								</v-list-item-group>
 							</v-list>
@@ -86,156 +99,179 @@
 					</v-col>
 
 					<!-- Play area -->
-					<v-col cols="6">
-						<v-card class="mx-auto" min-width="100%" tile>
-							<canvas id="canvas" v-show="drawing">
-								Your browser does not support the canvas technology.
-							</canvas>
+					<v-col cols="6" align="center" class="p-2">
+						<v-card>
+							<v-container>
+								<canvas id="canvas" v-show="drawing">
+									Your browser does not support the canvas technology.
+								</canvas>
 
-							<canvas id="canvas1" v-show="!drawing">
-								Your browser does not support the canvas technology.
-							</canvas>
+								<canvas id="canvas1" v-show="!drawing">
+									Your browser does not support the canvas technology.
+								</canvas>
+							</v-container>
 						</v-card>
 					</v-col>
 
 					<!-- Chat -->
-					<v-col cols="3">
+					<v-col cols="4">
 						<v-card id="chat-container">
-							<v-list id="chat-messages" disabled v-for="(msg, i) in chats" :key="i">
-								<v-list-item v-if='msg.type === "alert"'>
-									<v-alert close-text="Close Alert" :type="msg.color" dark color="secondary" dense>
+							<v-list-item-group id="chat-messages" v-for="(msg, i) in chats" :key="i">
+								<v-list-item disabled>
+									<v-alert v-if='msg.type === "alert"' :type="msg.color" dark color="secondary" dense>
 										{{ msg.message }}
 									</v-alert>
-								</v-list-item>
 
-								<v-list-item v-if='msg.type === "message"' two-line>
-									<v-list-item-avatar>
-										<img :src="msg.avatar" />
-									</v-list-item-avatar>
-
-									<v-list-item-content>
-										<v-list-item-title>{{ msg.nickname }}</v-list-item-title>
-										<v-list-item-subtitle v-html="msg.message"></v-list-item-subtitle>
+									<v-list-item-content v-if='msg.type === "message"' two-line>
+										<v-list-item-title>
+											<v-chip outlined>
+												<v-avatar left>
+													<img :src="gravatarURL(msg.email)">
+												</v-avatar>
+												{{ msg.nickname }}
+											</v-chip>
+										</v-list-item-title>
+										<v-list-item-subtitle>
+											<v-chip>{{ msg.message }}</v-chip>
+										</v-list-item-subtitle>
 									</v-list-item-content>
 								</v-list-item>
-							</v-list>
+							</v-list-item-group>
 						</v-card>
 					</v-col>
-				</v-row>
 
-				<!-- Special row -->
-				<v-row>
 					<!-- Tools -->
 					<v-col cols="6" offset="2">
 						<v-card id="toolbar" v-show="drawing">
-							<v-row>
-								<v-col cols="12">
-									<v-btn>
-										<input id="color" type="color" value="#FFFFFF" style="height: 30px;">
-									</v-btn>
+							<v-container>
+								<v-row>
+									<v-col cols="12">
+										<v-btn color="secondary" class="mr-3">
+											<input id="color" type="color" value="#FFFFFF" style="height: 30px;">
+										</v-btn>
 
-									<v-icon left>mdi-format-font-size-decrease</v-icon>
-									<input type="range" class="custom-range" min="1" max="50" step="1" value="10" id="brushSize">
-									<v-icon right>mdi-format-font-size-increase</v-icon>
+										<v-tooltip top open-delay="500">
+											<template v-slot:activator="{ on, attrs }">
+												<v-btn @click="tool('pencil')" v-bind="attrs" v-on="on" color="primary">
+													<v-icon>mdi-pencil</v-icon>
+												</v-btn>
+											</template>
+											<span>Pencil</span>
+										</v-tooltip>
 
-									<v-tooltip top open-delay="500">
-										<template v-slot:activator="{ on, attrs }">
-											<v-btn @click="tool('pencil')" v-bind="attrs" v-on="on">
-												<v-icon>mdi-pencil</v-icon>
+										<v-tooltip top open-delay="500">
+											<template v-slot:activator="{ on, attrs }">
+												<v-btn @click="tool('eraser')" v-bind="attrs" v-on="on" color="pink" class="lighten-2 mr-3">
+													<v-icon>mdi-eraser</v-icon>
+												</v-btn>
+											</template>
+											<span>Eraser</span>
+										</v-tooltip>
+
+										<v-tooltip top open-delay="500">
+											<template v-slot:activator="{ on, attrs }">
+												<v-btn @click="undo" v-bind="attrs" v-on="on" color="indigo">
+													<v-icon>mdi-undo</v-icon>
+												</v-btn>
+											</template>
+											<span>Undo</span>
+										</v-tooltip>
+
+										<v-tooltip top open-delay="500">
+											<template v-slot:activator="{ on, attrs }">
+												<v-btn @click="redo" v-bind="attrs" v-on="on" color="indigo" class="mr-3">
+													<v-icon>mdi-redo</v-icon>
+												</v-btn>
+											</template>
+											<span>Redo</span>
+										</v-tooltip>
+
+										<v-btn :ripple="false" class="mr-3">
+											<v-icon left>mdi-format-font-size-decrease</v-icon>
+											<input type="range" class="custom-range" min="1" max="50" step="1" value="10" id="brushSize">
+											<v-icon right>mdi-format-font-size-increase</v-icon>
+										</v-btn>
+
+										<v-tooltip top open-delay="500">
+											<template v-slot:activator="{ on, attrs }">
+												<v-btn @click="tool('fill')" v-bind="attrs" v-on="on">
+													<v-icon>mdi-format-color-fill</v-icon>
+												</v-btn>
+											</template>
+											<span>Fill all</span>
+										</v-tooltip>
+
+										<v-tooltip top open-delay="500">
+											<template v-slot:activator="{ on, attrs }">
+												<v-btn @click="tool('clear')" v-bind="attrs" v-on="on" color="red">
+													<v-icon>mdi-delete</v-icon>
+												</v-btn>
+											</template>
+											<span>Clear</span>
+										</v-tooltip>
+									</v-col>
+
+									<!-- Brush size -->
+									<v-col cols="12">
+										<!-- <v-btn-toggle>
+											<v-btn disabled small>
+												<v-icon>mdi-format-font-size-decrease</v-icon>
 											</v-btn>
-										</template>
-										<span>Pencil</span>
-									</v-tooltip>
 
-									<v-tooltip top open-delay="500">
-										<template v-slot:activator="{ on, attrs }">
-											<v-btn @click="tool('eraser')" v-bind="attrs" v-on="on">
-												<v-icon>mdi-eraser</v-icon>
+											<v-btn :ripple="false" small>
+												<input type="range" class="custom-range" min="1" max="50" step="1" value="10" id="brushSize">
 											</v-btn>
-										</template>
-										<span>Eraser</span>
-									</v-tooltip>
 
-									<v-tooltip top open-delay="500">
-										<template v-slot:activator="{ on, attrs }">
-											<v-btn @click="tool('fill')" v-bind="attrs" v-on="on">
-												<v-icon>mdi-format-color-fill</v-icon>
+											<v-btn disabled small>
+												<v-icon>mdi-format-font-size-increase</v-icon>
 											</v-btn>
-										</template>
-										<span>Fill all</span>
-									</v-tooltip>
+										</v-btn-toggle> -->
+									</v-col>
 
-									<v-tooltip top open-delay="500">
-										<template v-slot:activator="{ on, attrs }">
-											<v-btn @click="tool('clear')" v-bind="attrs" v-on="on">
-												<v-icon>mdi-delete</v-icon>
-											</v-btn>
-										</template>
-										<span>Clear</span>
-									</v-tooltip>
+									<v-col cols="12" class="py-0">
+										<span name="color" data-value="#000000" style="--bg-color: #000000"></span>
+										<span name="color" data-value="#404040" style="--bg-color: #404040"></span>
+										<span name="color" data-value="#FF0000" style="--bg-color: #FF0000"></span>
+										<span name="color" data-value="#FF6A00" style="--bg-color: #FF6A00"></span>
+										<span name="color" data-value="#FFD800" style="--bg-color: #FFD800"></span>
+										<span name="color" data-value="#B6FF00" style="--bg-color: #B6FF00"></span>
+										<span name="color" data-value="#4CFF00" style="--bg-color: #4CFF00"></span>
+										<span name="color" data-value="#00FF21" style="--bg-color: #00FF21"></span>
+										<span name="color" data-value="#00FF90" style="--bg-color: #00FF90"></span>
+										<span name="color" data-value="#00FFFF" style="--bg-color: #00FFFF"></span>
+										<span name="color" data-value="#0094FF" style="--bg-color: #0094FF"></span>
+										<span name="color" data-value="#0026FF" style="--bg-color: #0026FF"></span>
+										<span name="color" data-value="#4800FF" style="--bg-color: #4800FF"></span>
+										<span name="color" data-value="#B200FF" style="--bg-color: #B200FF"></span>
+										<span name="color" data-value="#FF00DC" style="--bg-color: #FF00DC"></span>
+										<span name="color" data-value="#FF006E" style="--bg-color: #FF006E"></span>
+									</v-col>
 
-									<v-tooltip top open-delay="500">
-										<template v-slot:activator="{ on, attrs }">
-											<v-btn @click="undo" v-bind="attrs" v-on="on" disabled>
-												<v-icon>mdi-undo</v-icon>
-											</v-btn>
-										</template>
-										<span>Undo</span>
-									</v-tooltip>
-
-									<v-tooltip top open-delay="500">
-										<template v-slot:activator="{ on, attrs }">
-											<v-btn @click="redo" v-bind="attrs" v-on="on" disabled>
-												<v-icon>mdi-redo</v-icon>
-											</v-btn>
-										</template>
-										<span>Redo</span>
-									</v-tooltip>
-								</v-col>
-
-								<v-col cols="12" class="py-0">
-									<span name="color" data-value="#000000" style="--bg-color: #000000"></span>
-									<span name="color" data-value="#404040" style="--bg-color: #404040"></span>
-									<span name="color" data-value="#FF0000" style="--bg-color: #FF0000"></span>
-									<span name="color" data-value="#FF6A00" style="--bg-color: #FF6A00"></span>
-									<span name="color" data-value="#FFD800" style="--bg-color: #FFD800"></span>
-									<span name="color" data-value="#B6FF00" style="--bg-color: #B6FF00"></span>
-									<span name="color" data-value="#4CFF00" style="--bg-color: #4CFF00"></span>
-									<span name="color" data-value="#00FF21" style="--bg-color: #00FF21"></span>
-									<span name="color" data-value="#00FF90" style="--bg-color: #00FF90"></span>
-									<span name="color" data-value="#00FFFF" style="--bg-color: #00FFFF"></span>
-									<span name="color" data-value="#0094FF" style="--bg-color: #0094FF"></span>
-									<span name="color" data-value="#0026FF" style="--bg-color: #0026FF"></span>
-									<span name="color" data-value="#4800FF" style="--bg-color: #4800FF"></span>
-									<span name="color" data-value="#B200FF" style="--bg-color: #B200FF"></span>
-									<span name="color" data-value="#FF00DC" style="--bg-color: #FF00DC"></span>
-									<span name="color" data-value="#FF006E" style="--bg-color: #FF006E"></span>
-								</v-col>
-
-								<v-col cols="12" class="py-0">
-									<span name="color" data-value="#FFFFFF" style="--bg-color: #FFFFFF"></span>
-									<span name="color" data-value="#808080" style="--bg-color: #808080"></span>
-									<span name="color" data-value="#7F0000" style="--bg-color: #7F0000"></span>
-									<span name="color" data-value="#7F3300" style="--bg-color: #7F3300"></span>
-									<span name="color" data-value="#7F6A00" style="--bg-color: #7F6A00"></span>
-									<span name="color" data-value="#5B7F00" style="--bg-color: #5B7F00"></span>
-									<span name="color" data-value="#267F00" style="--bg-color: #267F00"></span>
-									<span name="color" data-value="#007F0E" style="--bg-color: #007F0E"></span>
-									<span name="color" data-value="#007F46" style="--bg-color: #007F46"></span>
-									<span name="color" data-value="#007F7F" style="--bg-color: #007F7F"></span>
-									<span name="color" data-value="#004A7F" style="--bg-color: #004A7F"></span>
-									<span name="color" data-value="#00137F" style="--bg-color: #00137F"></span>
-									<span name="color" data-value="#21007F" style="--bg-color: #21007F"></span>
-									<span name="color" data-value="#57007F" style="--bg-color: #57007F"></span>
-									<span name="color" data-value="#7F006E" style="--bg-color: #7F006E"></span>
-									<span name="color" data-value="#7F0037" style="--bg-color: #7F0037"></span>
-								</v-col>
-							</v-row>
+									<v-col cols="12" class="py-0">
+										<span name="color" data-value="#FFFFFF" style="--bg-color: #FFFFFF"></span>
+										<span name="color" data-value="#808080" style="--bg-color: #808080"></span>
+										<span name="color" data-value="#7F0000" style="--bg-color: #7F0000"></span>
+										<span name="color" data-value="#7F3300" style="--bg-color: #7F3300"></span>
+										<span name="color" data-value="#7F6A00" style="--bg-color: #7F6A00"></span>
+										<span name="color" data-value="#5B7F00" style="--bg-color: #5B7F00"></span>
+										<span name="color" data-value="#267F00" style="--bg-color: #267F00"></span>
+										<span name="color" data-value="#007F0E" style="--bg-color: #007F0E"></span>
+										<span name="color" data-value="#007F46" style="--bg-color: #007F46"></span>
+										<span name="color" data-value="#007F7F" style="--bg-color: #007F7F"></span>
+										<span name="color" data-value="#004A7F" style="--bg-color: #004A7F"></span>
+										<span name="color" data-value="#00137F" style="--bg-color: #00137F"></span>
+										<span name="color" data-value="#21007F" style="--bg-color: #21007F"></span>
+										<span name="color" data-value="#57007F" style="--bg-color: #57007F"></span>
+										<span name="color" data-value="#7F006E" style="--bg-color: #7F006E"></span>
+										<span name="color" data-value="#7F0037" style="--bg-color: #7F0037"></span>
+									</v-col>
+								</v-row>
+							</v-container>
 						</v-card>
 					</v-col>
 
 					<!-- Chat input -->
-					<v-col cols="3">
+					<v-col cols="4">
 						<v-card>
 							<v-container>
 								<v-text-field

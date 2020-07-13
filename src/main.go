@@ -1,23 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	// "guesswhat/src/randWord"
 
 	"github.com/gorilla/websocket"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 var clients = make(map[*websocket.Conn]bool) // Connected clients
-var broadcast = make(chan Message)           // Broadcast channel
+var broadcast = make(chan Type)              // Broadcast channel
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{}
 
 // Type ...
 type Type struct {
-	Type string `json:"type"`
+	Type     string `json:"type"`
+	Email    string `json:"email"`
+	Nickname string `json:"nickname"`
+	OldNick  string `json:"oldnick"`
+	Message  string `json:"message"`
 }
 
 // Message ...
@@ -32,6 +36,12 @@ type Message struct {
 type Nickname struct {
 	Type     string `json:"type"`
 	Nickname string `json:"nickname"`
+}
+
+// Image ...
+type Image struct {
+	Type    string `json:"type"`
+	Message string `json:"message"`
 }
 
 func main() {
@@ -66,38 +76,68 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	clients[ws] = true
 
 	for {
-		var msg Message
+		var typ Type
+		// var msg Message
+		// var nick Nickname
+		// var img Image
 
-		err := ws.ReadJSON(&msg)
+		err := ws.ReadJSON(&typ)
 		if err != nil {
 			log.Printf("error: %v", err)
 			delete(clients, ws)
 			break
 		}
 
-		// Send the newly received message to the broadcast channel
-		broadcast <- msg
+		switch typ.Type {
+		case "message":
+			fmt.Println(typ)
+			broadcast <- typ
+			break
+		case "nickname":
+			fmt.Println(typ)
+			broadcast <- typ
+			break
+		case "image":
+			broadcast <- typ
+			break
+
+		default:
+			fmt.Printf("Websocket: Type de msg inconnu: %s", typ.Type)
+			broadcast <- typ
+		}
+
+		// err := ws.ReadJSON(&msg)
+		// if err != nil {
+		// 	log.Printf("error: %v", err)
+		// 	delete(clients, ws)
+		// 	break
+		// }
+
+		// // Send the newly received message to the broadcast channel
+		// broadcast <- typ
 	}
 }
 
+// User ...
 type User struct {
-	Email string
+	Email    string
 	Nickname string
-	Host bool
-	Drawing bool
-	Score int
-	Guess bool
+	Host     bool
+	Drawing  bool
+	Score    int
+	Guess    bool
 }
 
+// Room ...
 type Room struct {
-	ID uuid.UUID
-	Name string
-	UserList map[string]User
-	Word string
-	RoundMax int
-	Round int
+	ID            uuid.UUID
+	Name          string
+	UserList      map[string]User
+	Word          string
+	RoundMax      int
+	Round         int
 	RoundDuration int
-	CustomWords string
+	CustomWords   string
 }
 
 func handleMessages() {
@@ -109,7 +149,6 @@ func handleMessages() {
 		// case CreateRoom:
 		// 	createRoom()
 		// case Message:
-
 		// }
 
 		// Send it out to every client that is currently connected
