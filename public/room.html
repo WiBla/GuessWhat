@@ -122,17 +122,18 @@
 										{{ msg.message }}
 									</v-alert>
 
-									<v-list-item-content v-if='msg.type === "message"' two-line>
-										<v-list-item-title>
+									<v-list-item-content v-if='msg.type === "message"' class='py-0'>
+										<v-list-item-title v-if="chats[i-1]?.avatar != msg.avatar">
 											<v-chip outlined>
 												<v-avatar left>
-													<img :src="gravatarURL(msg.email)">
+													<img :src="msg.avatar">
 												</v-avatar>
 												{{ msg.nickname }}
 											</v-chip>
 										</v-list-item-title>
+
 										<v-list-item-subtitle>
-											<v-chip>{{ msg.message }}</v-chip>
+											<v-chip tile>{{ msg.message }}</v-chip>
 										</v-list-item-subtitle>
 									</v-list-item-content>
 								</v-list-item>

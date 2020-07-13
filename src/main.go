@@ -22,6 +22,7 @@ type Type struct {
 	Nickname string `json:"nickname"`
 	OldNick  string `json:"oldnick"`
 	Message  string `json:"message"`
+	Rooms    string `json:"rooms"`
 }
 
 // Message ...
@@ -90,7 +91,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 		switch typ.Type {
 		case "message":
-			fmt.Println(typ)
+			log.Printf("[%v]: %v", typ.Nickname, typ.Message)
 			broadcast <- typ
 			break
 		case "nickname":
@@ -100,21 +101,15 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		case "image":
 			broadcast <- typ
 			break
+		case "dashboard":
+			// TO-DO Send real data
+			ws.WriteMessage(websocket.TextMessage, []byte("{\"type\": \"dashboard\",\"rooms\": [{\"name\": \"My first room\",\"host\": \"WiBla\"}]}"))
+			break
 
 		default:
 			fmt.Printf("Websocket: Type de msg inconnu: %s", typ.Type)
 			broadcast <- typ
 		}
-
-		// err := ws.ReadJSON(&msg)
-		// if err != nil {
-		// 	log.Printf("error: %v", err)
-		// 	delete(clients, ws)
-		// 	break
-		// }
-
-		// // Send the newly received message to the broadcast channel
-		// broadcast <- typ
 	}
 }
 
