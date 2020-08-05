@@ -1,0 +1,4 @@
+#app > div {
+	background-image: url("test.png");
+	background-repeat: repeat;
+}

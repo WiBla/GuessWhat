@@ -1,7 +1,7 @@
 Vue.config.devtools = true;
 
 new Vue({
-	el: '#login',
+	el: '#app',
 	vuetify: new Vuetify({
 		theme: {
 			dark: true,

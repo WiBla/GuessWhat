@@ -44,5 +44,15 @@ new Vue({
 		this.ws.addEventListener('close', function() {
 			location.reload();
 		});
+	},
+	methods: {
+		createRoom() {
+			this.ws.send(JSON.stringify({
+				type: "newroom",
+				name: this.roomName
+			}));
+
+			this.roomName = '';
+		}
 	}
 });
